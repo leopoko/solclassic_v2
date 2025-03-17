@@ -1,0 +1,25 @@
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+configurations {
+    // Forge 用に再難読化などの変換処理で利用される構成を定義
+    transformProductionForge {
+        canBeConsumed = true   // 他プロジェクト（Forge モジュール）がこの構成を消費できる
+        canBeResolved = false  // 解決（依存関係の解決）は行わない（公開専用）
+    }
+}
+
+artifacts {
+    // transformProductionForge 構成として、JAR を公開する
+    add("transformProductionForge", jar)
+}
+
+dependencies {
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
+    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+}

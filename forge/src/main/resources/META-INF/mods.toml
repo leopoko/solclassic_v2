@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "solclassic"
+version = "${version}"
+displayName = "Spice of Life: Classic Edition"
+authors = "leopoko"
+description = '''
+Eating the same food will cause the recovery level to decrease.
+'''
+logoFile = "icon.png"
+
+[[dependencies.solclassic]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.solclassic]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.solclassic]]
+modId = "architectury"
+mandatory = true
+versionRange = "[9.2.14,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[modproperties.solclassic]
+catalogueImageIcon="icon.png"
+catalogueBackground="catalogue_background_sol.png"
+configuredBackground="minecraft:textures/block/cobblestone.png"

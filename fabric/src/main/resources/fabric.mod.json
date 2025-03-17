@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "solclassic",
+  "version": "${version}",
+  "name": "Spice of Life: Classic Edition",
+  "description": "Eating the same food will cause the recovery level to decrease.",
+  "authors": [
+    "leopoko"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/foodvariations"
+  },
+  "license": "MIT",
+  "icon": "assets/solclassic/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.leopoko.solclassic.fabric.SolclassicFabric"
+    ],
+    "client": [
+      "com.github.leopoko.solclassic.fabric.client.SolclassicFabricClient"
+    ],
+    "cardinal-components": [
+      "com.github.leopoko.solclassic.fabric.foodhistory.FoodHistoryComponentImplFabric"
+    ]
+  },
+  "mixins": [
+    "solclassic.mixins.json",
+    "solclassic-fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "architectury": ">=9.2.14",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  },
+  "custom": {
+    "cardinal-components": [
+      "solclassic:food_history"
+    ]
+  }
+}
