@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(LivingEntity.class)
+@Mixin(value = LivingEntity.class, priority = 1100)
 public class LivingEntityMixinForge {
     @Redirect(method = "eat", at = @At(
             value = "INVOKE",
@@ -22,8 +22,11 @@ public class LivingEntityMixinForge {
 
             if (!itemId.equals("solclassic:wicker_basket")) {
                 stack.shrink(1);
-            }
-            else {
+            } else if (!itemId.equals("phantasm:oblifruit")) {
+                if (Math.random() < 0.4) {
+                    stack.shrink(1);
+                }
+            } else {
                 if (stack.getItem() instanceof WickerBasketItem) {
                     ItemStack mostNutritiousItem = WickerBasketItem.getMostNutritiousFood(stack, (Player)entity);
                     WickerBasketItem.shrinkMostNutritiousItemFromInventory(stack, (Player)entity);

@@ -3,8 +3,15 @@ plugins {
 }
 
 loom {
+    runs {
+        client {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+        }
+    }
     forge {
         mixinConfig "solclassic-forge.mixins.json"
+        mixinConfig "phantasm.mixins.json"
     }
 }
 
@@ -48,6 +55,7 @@ dependencies {
     modRuntimeOnly "curse.maven:farmers-delight-398521:4638874"
     modRuntimeOnly "mezz.jei:jei-1.20.1-forge:15.20.0.106"
     modRuntimeOnly "squeek.appleskin:appleskin-forge:mc1.20.1-2.5.1"
+    //modRuntimeOnly "curse.maven:phantasm-565254:6149582"
     //modRuntimeOnly "curse.maven:diet-443570:4813904"
     //modRuntimeOnly "curse.maven:spectrelib-993948:5217603"
     //modRuntimeOnly files("libs/pizzadelight-1.20.1-1.0.0.jar")
@@ -69,3 +77,4 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
 }
+

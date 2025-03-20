@@ -104,6 +104,7 @@ subprojects {
 
 
     tasks.withType(JavaExec).configureEach {
+        //systemProperty 'mixin.debug', 'true'
         systemProperty 'mixin.env.remapRefMap', 'true'
         systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
     }
