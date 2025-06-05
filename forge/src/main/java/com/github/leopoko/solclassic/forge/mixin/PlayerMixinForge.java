@@ -38,6 +38,8 @@ public class PlayerMixinForge {
         if (itemId.equals("solclassic:wicker_basket")){
             WickerBasketItem wickerBasketItem = (WickerBasketItem) entity.getItem();
             entity = wickerBasketItem.getMostNutritiousFood(entity, player);
+            // Update itemId after retrieving the actual food item
+            itemId = BuiltInRegistries.ITEM.getKey(entity.getItem()).toString();
         }
 
         for (String itemID_ : SolClassicConfigForge.CONFIG.foodBlacklist.get()) {
