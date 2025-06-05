@@ -46,7 +46,7 @@ public class SolClassicConfigLoaderFabric {
     public static void loadConfig(MinecraftServer server) {
         try {
             // サーバーのルートディレクトリから config フォルダを取得
-            Path configDir = server.getWorldPath(LevelResource.ROOT).resolve("severconfig");
+            Path configDir = server.getWorldPath(LevelResource.ROOT).resolve("serverconfig");
             if (!Files.exists(configDir)) {
                 Files.createDirectories(configDir);
             }

@@ -35,6 +35,8 @@ public class PlayerMixinFabric {
         if (itemId.equals("solclassic:wicker_basket")) {
             WickerBasketItem wickerBasketItem = (WickerBasketItem) itemStack.getItem();
             itemStack = wickerBasketItem.getMostNutritiousFood(itemStack, player);
+            // Update itemId to the actual food item after extraction
+            itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
         }
 
         for (String itemID_ : SolclassicConfigData.foodBlacklist) {
