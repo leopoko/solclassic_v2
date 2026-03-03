@@ -20,7 +20,7 @@ public class LivingEntityMixinForge {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
             if (itemId.equals("solclassic:wicker_basket")) {
-                // WickerBasket の場合：バスケット内の最も栄養価の高い食べ物を消費
+                // WickerBasketの場合はバスケット自体を消費せず、中の食べ物を消費する
                 if (stack.getItem() instanceof WickerBasketItem) {
                     ItemStack mostNutritiousItem = WickerBasketItem.getMostNutritiousFood(stack, (Player)entity);
                     WickerBasketItem.shrinkMostNutritiousItemFromInventory(stack, (Player)entity);
@@ -43,16 +43,14 @@ public class LivingEntityMixinForge {
                     }
                 }
             } else if (itemId.equals("phantasm:oblifruit")) {
-                // Phantasm MOD の oblifruit：40%の確率で消費
+                // Phantasm MODのoblifruitは40%の確率で消費
                 if (Math.random() < 0.4) {
                     stack.shrink(1);
                 }
             } else {
-                // 通常の食べ物：1つ消費
                 stack.shrink(1);
             }
         }
     }
 
 }
-
