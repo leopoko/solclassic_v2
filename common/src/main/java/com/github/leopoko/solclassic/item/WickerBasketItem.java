@@ -4,7 +4,6 @@ import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.container.FoodChestMenu;
 import com.github.leopoko.solclassic.container.FoodContainer;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -111,9 +110,7 @@ public class WickerBasketItem extends Item {
         boolean found = false;
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack itemStack = container.getItem(i);
-            String itemId_a = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
-            String itemId_b = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-            if (itemId_a.equals(itemId_b)) {
+            if (itemStack.getItem() == stack.getItem()) {
                 //container.removeItem(i, 1);
                 itemStack.shrink(1);
                 if (itemStack.isEmpty()) {

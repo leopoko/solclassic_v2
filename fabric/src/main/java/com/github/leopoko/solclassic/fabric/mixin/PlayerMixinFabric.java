@@ -42,14 +42,15 @@ public class PlayerMixinFabric {
         for (String itemID_ : SolclassicConfigData.foodBlacklist) {
             if (itemId.equals(itemID_)) {
                 FoodProperties foodProperties_ = itemStack.getItem().getFoodProperties();
+                if (foodProperties_ == null) return;
                 instance.eat(foodProperties_.getNutrition(), foodProperties_.getSaturationModifier());
                 return;
             }
         }
 
         if (!itemStack.isEmpty()) {
-
             FoodProperties foodProperties = itemStack.getItem().getFoodProperties();
+            if (foodProperties == null) return;
 
             float multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
             int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);

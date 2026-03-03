@@ -4,7 +4,6 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.LinkedList;
@@ -44,7 +43,6 @@ public class FoodHistoryComponentFabric implements IFoodHistoryComponentFabric {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        System.out.println("Food history loaded (" + history.size() + " entries):");
         history.clear();
         if (tag.contains(FOOD_HISTORY_TAG, Tag.TAG_LIST)) {
             ListTag listTag = tag.getList(FOOD_HISTORY_TAG, Tag.TAG_COMPOUND);

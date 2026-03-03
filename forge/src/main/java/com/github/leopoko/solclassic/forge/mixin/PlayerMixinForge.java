@@ -1,9 +1,9 @@
 package com.github.leopoko.solclassic.forge.mixin;
 
 import com.github.leopoko.solclassic.forge.config.SolClassicConfigForge;
-import com.github.leopoko.solclassic.forge.config.SolClassicConfigInitForge;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
+import com.github.leopoko.solclassic.network.FoodHistorySync;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(value = Player.class, priority = 1100)
@@ -45,15 +44,15 @@ public class PlayerMixinForge {
         for (String itemID_ : SolClassicConfigForge.CONFIG.foodBlacklist.get()) {
             if (itemId.equals(itemID_)) {
                 FoodProperties foodProperties_ = entity.getItem().getFoodProperties();
+                if (foodProperties_ == null) return;
                 instance.eat(foodProperties_.getNutrition(), foodProperties_.getSaturationModifier());
                 return;
             }
         }
 
-        SolClassicConfigInitForge.init();
-
         if (!entity.isEmpty()) {
             FoodProperties foodProperties = entity.getItem().getFoodProperties();
+            if (foodProperties == null) return;
 
             float multiplier = FoodCalculator.CalculateMultiplier(entity, player);
             int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
@@ -63,6 +62,7 @@ public class PlayerMixinForge {
             if (player instanceof net.minecraft.server.level.ServerPlayer) {
                 // サーバー側で食事履歴を更新
                 FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, entity, SolClassicConfigForge.CONFIG.maxFoodHistorySize.get());
+                FoodHistorySync.syncFoodHistory((ServerPlayer) player);
             }
         }
     }
