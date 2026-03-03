@@ -2,7 +2,6 @@ package com.github.leopoko.solclassic.fabric.mixin;
 
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,8 +36,9 @@ public class LivingEntityMixinFabric {
                             }
                         }
 
-                        if (mostNutritiousItem.getItem().getFoodProperties().getEffects() != null) {
-                            for (var effect : mostNutritiousItem.getItem().getFoodProperties().getEffects()) {
+                        net.minecraft.world.food.FoodProperties foodProps = mostNutritiousItem.getItem().getFoodProperties();
+                        if (foodProps != null && foodProps.getEffects() != null) {
+                            for (var effect : foodProps.getEffects()) {
                                 entity.addEffect(effect.getFirst());
                             }
                         }

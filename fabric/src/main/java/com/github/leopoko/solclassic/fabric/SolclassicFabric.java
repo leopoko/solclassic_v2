@@ -2,16 +2,10 @@ package com.github.leopoko.solclassic.fabric;
 
 import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.fabric.config.SolClassicConfigLoaderFabric;
-import com.github.leopoko.solclassic.fabric.foodhistory.FoodHistoryComponentFabric;
-import com.github.leopoko.solclassic.fabric.foodhistory.FoodHistoryComponentImplFabric;
 import com.github.leopoko.solclassic.fabric.network.FoodEventHandlerFabric;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.ModNetworking;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.world.entity.player.Player;
 
 public final class SolclassicFabric implements ModInitializer {
 

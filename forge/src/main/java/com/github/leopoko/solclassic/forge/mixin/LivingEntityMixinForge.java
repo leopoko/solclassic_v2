@@ -2,7 +2,6 @@ package com.github.leopoko.solclassic.forge.mixin;
 
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -20,13 +19,8 @@ public class LivingEntityMixinForge {
         if (!(entity instanceof Player) || !((Player)entity).getAbilities().instabuild) {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
-            if (!itemId.equals("solclassic:wicker_basket")) {
-                stack.shrink(1);
-            } else if (!itemId.equals("phantasm:oblifruit")) {
-                if (Math.random() < 0.4) {
-                    stack.shrink(1);
-                }
-            } else {
+            if (itemId.equals("solclassic:wicker_basket")) {
+                // WickerBasket の場合：バスケット内の最も栄養価の高い食べ物を消費
                 if (stack.getItem() instanceof WickerBasketItem) {
                     ItemStack mostNutritiousItem = WickerBasketItem.getMostNutritiousFood(stack, (Player)entity);
                     WickerBasketItem.shrinkMostNutritiousItemFromInventory(stack, (Player)entity);
@@ -40,13 +34,22 @@ public class LivingEntityMixinForge {
                             }
                         }
 
-                        if (mostNutritiousItem.getItem().getFoodProperties().getEffects() != null) {
-                            for (var effect : mostNutritiousItem.getItem().getFoodProperties().getEffects()) {
+                        net.minecraft.world.food.FoodProperties foodProps = mostNutritiousItem.getItem().getFoodProperties();
+                        if (foodProps != null && foodProps.getEffects() != null) {
+                            for (var effect : foodProps.getEffects()) {
                                 entity.addEffect(effect.getFirst());
                             }
                         }
                     }
                 }
+            } else if (itemId.equals("phantasm:oblifruit")) {
+                // Phantasm MOD の oblifruit：40%の確率で消費
+                if (Math.random() < 0.4) {
+                    stack.shrink(1);
+                }
+            } else {
+                // 通常の食べ物：1つ消費
+                stack.shrink(1);
             }
         }
     }
