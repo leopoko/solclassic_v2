@@ -1,6 +1,5 @@
 package com.github.leopoko.solclassic.forge.mixin;
 
-import com.github.leopoko.solclassic.item.WickerBasketItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -20,28 +19,8 @@ public class LivingEntityMixinForge {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
             if (itemId.equals("solclassic:wicker_basket")) {
-                // WickerBasketの場合はバスケット自体を消費せず、中の食べ物を消費する
-                if (stack.getItem() instanceof WickerBasketItem) {
-                    ItemStack mostNutritiousItem = WickerBasketItem.getMostNutritiousFood(stack, (Player)entity);
-                    WickerBasketItem.shrinkMostNutritiousItemFromInventory(stack, (Player)entity);
-
-                    if (!mostNutritiousItem.is(ItemStack.EMPTY.getItem())) {
-
-                        if (mostNutritiousItem.getItem().getCraftingRemainingItem() != null) {
-                            ItemStack containerItem = mostNutritiousItem.getItem().getCraftingRemainingItem().getDefaultInstance();
-                            if (!((Player)entity).getInventory().add(containerItem)) {
-                                ((Player)entity).drop(containerItem, false);
-                            }
-                        }
-
-                        net.minecraft.world.food.FoodProperties foodProps = mostNutritiousItem.getItem().getFoodProperties();
-                        if (foodProps != null && foodProps.getEffects() != null) {
-                            for (var effect : foodProps.getEffects()) {
-                                entity.addEffect(effect.getFirst());
-                            }
-                        }
-                    }
-                }
+                // WickerBasketの場合はfinishUsingItem()で消費処理を行うため、
+                // ここではWickerBasket自体のshrinkをスキップするだけ
             } else if (itemId.equals("phantasm:oblifruit")) {
                 // Phantasm MODのoblifruitは40%の確率で消費
                 if (Math.random() < 0.4) {
