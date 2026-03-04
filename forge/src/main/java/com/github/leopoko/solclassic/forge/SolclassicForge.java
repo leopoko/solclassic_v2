@@ -18,8 +18,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Solclassic.MOD_ID)
 public final class SolclassicForge {
+    @SuppressWarnings("removal") // Forge 1.20.1ではこれらのAPIが非推奨だが、代替APIが未整備のため使用を継続
     public SolclassicForge() {
-        // Submit our event bus to let Architectury API register our content on the right time.
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         EventBuses.registerModEventBus(Solclassic.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SolClassicConfigForge.SERVER_CONFIG);
