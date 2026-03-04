@@ -176,7 +176,7 @@ public class FoodHistoryBookScreen extends Screen {
 
                 // 食べ物名（省略対応）
                 String name = entry.stack.getHoverName().getString();
-                int maxNameWidth = (int) (82 * invScale);
+                int maxNameWidth = (int) (54 * invScale);
                 if (this.font.width(name) > maxNameWidth) {
                     name = this.font.plainSubstrByWidth(name, maxNameWidth - this.font.width("..")) + "..";
                 }
@@ -184,12 +184,12 @@ public class FoodHistoryBookScreen extends Screen {
 
                 // 回数
                 String times = "\u00d7" + entry.count;
-                graphics.drawString(this.font, times, (int) ((textX + 84) * invScale), (int) (textY * invScale), 0x555555, false);
+                graphics.drawString(this.font, times, (int) ((textX + 56) * invScale), (int) (textY * invScale), 0x555555, false);
 
                 // 減衰率（色分け: 緑=高い、黄色=中、赤=低い）
                 String percent = entry.multiplierPercent + "%";
                 int color = getMultiplierColor(entry.multiplierPercent);
-                graphics.drawString(this.font, percent, (int) ((textX + 100) * invScale), (int) (textY * invScale), color, false);
+                graphics.drawString(this.font, percent, (int) ((textX + 76) * invScale), (int) (textY * invScale), color, false);
 
                 graphics.pose().popPose();
             }
