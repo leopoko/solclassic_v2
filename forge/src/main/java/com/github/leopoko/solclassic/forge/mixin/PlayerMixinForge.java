@@ -51,18 +51,23 @@ public class PlayerMixinForge {
             }
         }
 
-        if (!entity.isEmpty()) {
+        // shrink(1)が先に実行されるため、スタック数1の場合countが0になる。
+        // getItem()はcount=0でも正しいアイテムを返すので、isEdible()で判定する。
+        if (entity.getItem().isEdible()) {
             FoodProperties foodProperties = entity.getItem().getFoodProperties();
             if (foodProperties == null) return;
 
-            float multiplier = FoodCalculator.CalculateMultiplier(entity, player);
+            // count=0のItemStackでも正しく比較できるが、履歴保存用にcount>=1のスタックを用意する
+            ItemStack foodToRecord = entity.isEmpty() ? new ItemStack(entity.getItem()) : entity;
+
+            float multiplier = FoodCalculator.CalculateMultiplier(foodToRecord, player);
             int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
 
             instance.eat(nutrition, foodProperties.getSaturationModifier());
 
             if (player instanceof net.minecraft.server.level.ServerPlayer) {
                 // サーバー側で食事履歴を更新
-                FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, entity, SolClassicConfigForge.CONFIG.maxFoodHistorySize.get());
+                FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, foodToRecord, SolClassicConfigForge.CONFIG.maxFoodHistorySize.get());
                 FoodHistorySync.syncFoodHistory((ServerPlayer) player);
             }
         }
