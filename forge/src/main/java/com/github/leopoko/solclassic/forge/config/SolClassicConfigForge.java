@@ -27,6 +27,7 @@ public class SolClassicConfigForge {
         public final ForgeConfigSpec.ConfigValue<List<? extends Double>> shortFoodDecayModifiers;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
         public final ForgeConfigSpec.BooleanValue enableWickerBasket;
+        public final ForgeConfigSpec.BooleanValue guaranteeMinimumNutrition;
 
         public ServerConfig(ForgeConfigSpec.Builder builder) {
             builder.push("SolClassicSettings");
@@ -54,6 +55,10 @@ public class SolClassicConfigForge {
             enableWickerBasket = builder
                     .comment("Enable Wicker Basket")
                     .define("enableWickerBasket", true);
+
+            guaranteeMinimumNutrition = builder
+                    .comment("Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.")
+                    .define("guaranteeMinimumNutrition", false);
 
             builder.pop();
         }

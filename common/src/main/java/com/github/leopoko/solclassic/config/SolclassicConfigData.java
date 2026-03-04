@@ -11,4 +11,6 @@ public class SolclassicConfigData {
     // Items that will not be affected by food history tracking
     public static List<String> foodBlacklist = Arrays.asList("minecraft:dried_kelp");
     public static boolean enableWickerBasket = true;
+    // 満腹度回復率が0%の食べ物に最低限1の回復を保証するかどうか
+    public static boolean guaranteeMinimumNutrition = false;
 }

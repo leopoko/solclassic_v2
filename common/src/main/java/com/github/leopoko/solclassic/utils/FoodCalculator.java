@@ -27,6 +27,7 @@ public class FoodCalculator {
     }
 
     public static int CalculateNutrition(int nutrition, float multiplier){
-        return Math.max(1, (int) (nutrition * multiplier));
+        int minNutrition = SolclassicConfigData.guaranteeMinimumNutrition ? 1 : 0;
+        return Math.max(minNutrition, (int) (nutrition * multiplier));
     }
 }
