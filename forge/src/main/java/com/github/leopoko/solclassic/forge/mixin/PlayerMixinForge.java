@@ -1,6 +1,7 @@
 package com.github.leopoko.solclassic.forge.mixin;
 
 import com.github.leopoko.solclassic.forge.config.SolClassicConfigForge;
+import com.github.leopoko.solclassic.forge.integration.ModCompatHelper;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.FoodHistorySync;
@@ -36,10 +37,12 @@ public class PlayerMixinForge {
 
         String itemId = BuiltInRegistries.ITEM.getKey(entity.getItem()).toString();
 
+        boolean isWickerBasket = false;
         if (itemId.equals("solclassic:wicker_basket")){
+            isWickerBasket = true;
             WickerBasketItem wickerBasketItem = (WickerBasketItem) entity.getItem();
             entity = wickerBasketItem.getMostNutritiousFood(entity, player);
-            // Update itemId after retrieving the actual food item
+            // 実際の食べ物アイテムでitemIdを更新
             itemId = BuiltInRegistries.ITEM.getKey(entity.getItem()).toString();
         }
 
@@ -73,6 +76,12 @@ public class PlayerMixinForge {
                 // サーバー側で食事履歴を更新
                 FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, foodToRecord, SolClassicConfigForge.CONFIG.maxFoodHistorySize.get());
                 FoodHistorySync.syncFoodHistory((ServerPlayer) player);
+
+                // WickerBasketから食べた場合、実際の食べ物アイテムでイベントを発火し
+                // Nutritional Balance等の食事イベント監視MODに通知する
+                if (isWickerBasket) {
+                    ModCompatHelper.notifyFoodConsumedFromBasket((ServerPlayer) player, entity);
+                }
             }
         }
     }
