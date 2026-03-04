@@ -37,7 +37,9 @@ public class SolClassicConfigLoaderFabric {
                     "#List of food items that should not be tracked\n" +
                     "foodBlacklist = [\"minecraft:dried_kelp\"]\n" +
                     "#Enable Wicker Basket\n" +
-                    "enableWickerBasket = true";
+                    "enableWickerBasket = true\n" +
+                    "#Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.\n" +
+                    "guaranteeMinimumNutrition = false";
 
     /**
      * サーバー（ワールド）起動時に呼ばれる処理です。
@@ -79,8 +81,9 @@ public class SolClassicConfigLoaderFabric {
             Long maxShortFoodHistoryVal = settings.getLong("maxShortFoodHistorySize");
             Double longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
             Boolean enableWickerBasket = settings.getBoolean("enableWickerBasket");
+            Boolean guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
 
-            if (maxFoodHistoryVal == null || maxShortFoodHistoryVal == null || longFoodDecayModifiersVal == null || enableWickerBasket == null) {
+            if (maxFoodHistoryVal == null || maxShortFoodHistoryVal == null || longFoodDecayModifiersVal == null || enableWickerBasket == null || guaranteeMinimumNutrition == null) {
                 server.sendSystemMessage(Component.literal("Invalid config keys detected. Recreating default config."));
                 recreateDefaultConfig(server, configFile);
                 result = Toml.parse(configFile);
@@ -89,6 +92,7 @@ public class SolClassicConfigLoaderFabric {
                 maxShortFoodHistoryVal = settings.getLong("maxShortFoodHistorySize");
                 longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
                 enableWickerBasket = settings.getBoolean("enableWickerBasket");
+                guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
             }
 
             // shortFoodDecayModifiers は List<Double> として取得（値は Number 型なので変換する）
@@ -111,6 +115,7 @@ public class SolClassicConfigLoaderFabric {
             SolclassicConfigData.maxShortFoodHistorySize = maxShortFoodHistoryVal.intValue();
             SolclassicConfigData.longFoodDecayModifiers = longFoodDecayModifiersVal.floatValue();
             SolclassicConfigData.enableWickerBasket = enableWickerBasket;
+            SolclassicConfigData.guaranteeMinimumNutrition = guaranteeMinimumNutrition;
 
         } catch (IOException e) {
             e.printStackTrace();
