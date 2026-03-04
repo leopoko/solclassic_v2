@@ -48,19 +48,22 @@ public class PlayerMixinFabric {
             }
         }
 
-        if (!itemStack.isEmpty()) {
+        // shrink(1)が先に実行されるため、スタック数1の場合countが0になる。
+        // getItem()はcount=0でも正しいアイテムを返すので、isEdible()で判定する。
+        if (itemStack.getItem().isEdible()) {
             FoodProperties foodProperties = itemStack.getItem().getFoodProperties();
             if (foodProperties == null) return;
 
-            float multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
+            // count=0のItemStackでも正しく比較できるが、履歴保存用にcount>=1のスタックを用意する
+            ItemStack foodToRecord = itemStack.isEmpty() ? new ItemStack(itemStack.getItem()) : itemStack;
+
+            float multiplier = FoodCalculator.CalculateMultiplier(foodToRecord, player);
             int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
 
             instance.eat(nutrition, foodProperties.getSaturationModifier());
 
             if (player instanceof net.minecraft.server.level.ServerPlayer) {
-                int count = FoodHistoryHolder.INSTANCE.countFoodEaten((ServerPlayer) player, itemStack);
-                //player.sendSystemMessage(Component.literal("食事履歴が更新されました。" + count + "回目の食事です。"));
-                FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, itemStack, SolclassicConfigData.maxFoodHistorySize);
+                FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, foodToRecord, SolclassicConfigData.maxFoodHistorySize);
                 FoodHistorySync.syncFoodHistory((ServerPlayer) player);
             }
         }
