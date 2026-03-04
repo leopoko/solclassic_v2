@@ -36,6 +36,10 @@ dependencies {
 
     //modCompileOnlyApi "squeek.appleskin:appleskin-fabric:mc1.20-2.5.1:api"
 
+    // Diet MOD連携（コンパイル時のみ、ソフト依存）
+    modCompileOnly "curse.maven:diet-443570:4813902"
+    modCompileOnly "curse.maven:spectrelib-993948:5217601"
+
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.3"
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.3"
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.3"
