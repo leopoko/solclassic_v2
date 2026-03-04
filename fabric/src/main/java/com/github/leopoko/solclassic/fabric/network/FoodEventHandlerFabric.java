@@ -119,4 +119,10 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
         }
         return count;
     }
+
+    @Override
+    public LinkedList<ItemStack> getClientFoodHistory(Player player) {
+        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
+        return history != null ? history : new LinkedList<>();
+    }
 }
