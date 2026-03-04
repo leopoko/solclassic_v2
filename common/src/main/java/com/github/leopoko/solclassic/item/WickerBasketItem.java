@@ -11,16 +11,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.food.FoodData;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BowlFoodItem;
-import net.minecraft.world.item.HoneyBottleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -44,23 +38,25 @@ public class WickerBasketItem extends Item {
             // 更新後に取得すると減衰計算の変化で異なる結果になる可能性がある）
             ItemStack food = getMostNutritiousFood(stack, player);
 
-            // eat()を呼んでPlayerMixinによる栄養値計算と食事履歴の記録を行う
-            // LivingEntityMixinはWickerBasketのshrink()をスキップする
-            entity.eat(level, stack);
+            if (!food.isEmpty()) {
+                // 食べ物のコピーを作成し、食べ物自身のfinishUsingItem()に処理を委譲する。
+                // これにより以下がすべて食べ物固有の実装で処理される:
+                //   - 栄養値の計算（PlayerMixin経由）
+                //   - 食事履歴の記録（PlayerMixin経由）
+                //   - ポーション効果の適用（LivingEntity.addEatEffect + SuspiciousStew等の固有処理）
+                //   - ボウル/瓶などの容器アイテム返却（finishUsingItemの戻り値）
+                ItemStack foodCopy = food.copy();
+                foodCopy.setCount(1);
+                ItemStack result = foodCopy.finishUsingItem(level, entity);
 
-            if (!level.isClientSide && !food.isEmpty()) {
-                // 確定した食べ物を直接指定してバスケットから消費する
-                shrinkItemFromInventory(stack, food);
+                if (!level.isClientSide) {
+                    // バスケットから食べ物を消費
+                    shrinkItemFromInventory(stack, food);
 
-                // 容器アイテムの返却（ボウル、ガラス瓶など）
-                returnContainerItem(food, player);
-
-                // 食料エフェクトの適用（例：金のリンゴの効果）
-                FoodProperties foodProps = food.getItem().getFoodProperties();
-                if (foodProps != null) {
-                    for (var pair : foodProps.getEffects()) {
-                        if (pair.getFirst() != null && level.random.nextFloat() < pair.getSecond()) {
-                            entity.addEffect(new MobEffectInstance(pair.getFirst()));
+                    // 容器アイテムの返却（戻り値がボウルやガラス瓶の場合）
+                    if (!result.isEmpty() && !result.is(food.getItem())) {
+                        if (!player.getInventory().add(result)) {
+                            player.drop(result, false);
                         }
                     }
                 }
@@ -135,30 +131,6 @@ public class WickerBasketItem extends Item {
         CompoundTag tag = stack.getOrCreateTag();
         tag.put(INVENTORY_TAG, container.createTag());
         stack.setTag(tag);
-    }
-
-    /**
-     * 食べ物アイテムに応じた容器アイテムをプレイヤーに返却する。
-     * BowlFoodItem（シチュー類）→ ボウル、HoneyBottleItem → ガラス瓶、
-     * getCraftingRemainingItem()（ミルクバケツ等）→ 対応する容器アイテム。
-     */
-    private static void returnContainerItem(ItemStack food, Player player) {
-        Item foodItem = food.getItem();
-        ItemStack containerItem = ItemStack.EMPTY;
-
-        if (foodItem.getCraftingRemainingItem() != null) {
-            containerItem = foodItem.getCraftingRemainingItem().getDefaultInstance();
-        } else if (foodItem instanceof BowlFoodItem) {
-            containerItem = new ItemStack(Items.BOWL);
-        } else if (foodItem instanceof HoneyBottleItem) {
-            containerItem = new ItemStack(Items.GLASS_BOTTLE);
-        }
-
-        if (!containerItem.isEmpty()) {
-            if (!player.getInventory().add(containerItem)) {
-                player.drop(containerItem, false);
-            }
-        }
     }
 
     private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack) {
