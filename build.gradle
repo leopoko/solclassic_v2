@@ -2,6 +2,7 @@ plugins {
     id 'dev.architectury.loom' version '1.9-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '1.1.0'
 }
 
 architectury {
@@ -107,5 +108,87 @@ subprojects {
         //systemProperty 'mixin.debug', 'true'
         systemProperty 'mixin.env.remapRefMap', 'true'
         systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+    }
+}
+
+// === CHANGELOG.md から最新バージョンのセクションのみ抽出 ===
+def extractLatestChangelog() {
+    def changelogFile = file("CHANGELOG.md")
+    if (!changelogFile.exists()) return "v${project.mod_version}"
+
+    def lines = changelogFile.text.readLines()
+    def result = []
+    def found = false
+
+    for (line in lines) {
+        // 最初の ## [x.xx] ヘッダーを見つけたら記録開始
+        if (line.matches(/^## \[.*].*/) && !found) {
+            found = true
+            continue
+        }
+        // 次の ## [x.xx] ヘッダーが来たら終了
+        if (line.matches(/^## \[.*].*/) && found) {
+            break
+        }
+        if (found) {
+            result << line
+        }
+    }
+
+    def text = result.join("\n").trim()
+    return text.isEmpty() ? "v${project.mod_version}" : text
+}
+
+// === MOD公開設定 ===
+publishMods {
+    changelog = extractLatestChangelog()
+    type = STABLE
+
+    // CurseForge 共通設定
+    def cfOptions = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = project.curseforge_project_id
+        projectSlug = "foodvariations"
+        minecraftVersions.add("1.20.1")
+        javaVersions.add(JavaVersion.VERSION_17)
+        requires("architectury-api")
+    }
+
+    // Modrinth 共通設定
+    def mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = project.modrinth_project_id
+        minecraftVersions.add("1.20.1")
+        requires("architectury-api")
+    }
+
+    // Fabric版
+    curseforge("curseforgeFabric") {
+        from cfOptions
+        file = project(":fabric").remapJar.archiveFile
+        displayName = "Spice of Life: Classic v${project.mod_version} (Fabric)"
+        modLoaders.add("fabric")
+        requires("fabric-api")
+    }
+    modrinth("modrinthFabric") {
+        from mrOptions
+        file = project(":fabric").remapJar.archiveFile
+        displayName = "Spice of Life: Classic v${project.mod_version} (Fabric)"
+        modLoaders.add("fabric")
+        requires("fabric-api")
+    }
+
+    // Forge版
+    curseforge("curseforgeForge") {
+        from cfOptions
+        file = project(":forge").remapJar.archiveFile
+        displayName = "Spice of Life: Classic v${project.mod_version} (Forge)"
+        modLoaders.add("forge")
+    }
+    modrinth("modrinthForge") {
+        from mrOptions
+        file = project(":forge").remapJar.archiveFile
+        displayName = "Spice of Life: Classic v${project.mod_version} (Forge)"
+        modLoaders.add("forge")
     }
 }
