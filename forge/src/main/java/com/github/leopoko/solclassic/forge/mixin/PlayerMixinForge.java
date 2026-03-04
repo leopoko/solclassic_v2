@@ -5,6 +5,7 @@ import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.FoodHistorySync;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
+import com.github.leopoko.solclassic.utils.FoodDecayTracker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,6 +63,9 @@ public class PlayerMixinForge {
 
             float multiplier = FoodCalculator.CalculateMultiplier(foodToRecord, player);
             int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
+
+            // Diet MOD連携: 減衰倍率と実際の食べ物を保存（Dietのイベントハンドラで使用）
+            FoodDecayTracker.recordDecay(player, entity, multiplier);
 
             instance.eat(nutrition, foodProperties.getSaturationModifier());
 
