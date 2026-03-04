@@ -2,6 +2,7 @@ package com.github.leopoko.solclassic;
 
 import com.github.leopoko.solclassic.commands.ResetFoodHistoryCommand;
 import com.github.leopoko.solclassic.item.BasketItem;
+import com.github.leopoko.solclassic.item.FoodHistoryBookItem;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.utils.ClientTooltipHandler;
 import com.mojang.brigadier.CommandDispatcher;
@@ -32,6 +33,9 @@ public final class Solclassic {
 
         final RegistrySupplier<Item> BASKET = ITEMS.register("basket", () ->
                 new BasketItem(new Item.Properties().stacksTo(1).arch$tab(CreativeModeTabs.TOOLS_AND_UTILITIES)));
+
+        final RegistrySupplier<Item> FOOD_HISTORY_BOOK = ITEMS.register("food_history_book", () ->
+                new FoodHistoryBookItem(new Item.Properties().stacksTo(1).arch$tab(CreativeModeTabs.TOOLS_AND_UTILITIES)));
 
         ITEMS.register();
 

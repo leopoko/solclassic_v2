@@ -7,5 +7,11 @@
   "item.solclassic.wicker_basket": "Wicker Basket",
   "container.wicker_basket": "Wicker Basket",
   "tooltip.wicker_basket.description1": "Right-click to eat the best food",
-  "tooltip.wicker_basket.description2": "Shift + Right-click to open."
+  "tooltip.wicker_basket.description2": "Shift + Right-click to open.",
+  "item.solclassic.food_history_book": "Food History Book",
+  "tooltip.food_history_book.description": "Right-click to view food history",
+  "gui.food_history_book.title": "Food History",
+  "gui.food_history_book.summary": "Eaten %s unique foods",
+  "gui.food_history_book.empty": "No food history yet",
+  "gui.food_history_book.page": "Page %s / %s"
 }

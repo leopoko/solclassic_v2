@@ -103,4 +103,10 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
         }
         return count;
     }
+
+    @Override
+    public LinkedList<ItemStack> getClientFoodHistory(Player player) {
+        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
+        return history != null ? history : new LinkedList<>();
+    }
 }

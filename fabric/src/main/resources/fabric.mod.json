@@ -36,7 +36,7 @@
     "fabric-api": "*"
   },
   "suggests": {
-    "another-mod": "*"
+    "diet": "*"
   },
   "custom": {
     "cardinal-components": [

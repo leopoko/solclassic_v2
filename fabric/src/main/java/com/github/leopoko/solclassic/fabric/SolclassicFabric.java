@@ -2,10 +2,12 @@ package com.github.leopoko.solclassic.fabric;
 
 import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.fabric.config.SolClassicConfigLoaderFabric;
+import com.github.leopoko.solclassic.fabric.integration.DietIntegrationFabric;
 import com.github.leopoko.solclassic.fabric.network.FoodEventHandlerFabric;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.ModNetworking;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class SolclassicFabric implements ModInitializer {
 
@@ -20,6 +22,11 @@ public final class SolclassicFabric implements ModInitializer {
         ModNetworking.registerPackets();
         Solclassic.init();
         SolClassicConfigLoaderFabric.register();
+
+        // Diet MOD連携: インストールされている場合のみイベントリスナーを登録
+        if (FabricLoader.getInstance().isModLoaded("diet")) {
+            DietIntegrationFabric.register();
+        }
 
 
 

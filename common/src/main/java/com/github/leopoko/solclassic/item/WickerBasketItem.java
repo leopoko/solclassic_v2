@@ -16,8 +16,11 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BowlFoodItem;
+import net.minecraft.world.item.HoneyBottleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -37,32 +40,27 @@ public class WickerBasketItem extends Item {
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull net.minecraft.world.entity.LivingEntity entity) {
         if (entity instanceof Player player) {
+            // 食事履歴更新前に食べ物を確定する（eat()内のPlayerMixinが履歴を更新するため、
+            // 更新後に取得すると減衰計算の変化で異なる結果になる可能性がある）
+            ItemStack food = getMostNutritiousFood(stack, player);
+
             // eat()を呼んでPlayerMixinによる栄養値計算と食事履歴の記録を行う
             // LivingEntityMixinはWickerBasketのshrink()をスキップする
             entity.eat(level, stack);
 
-            if (!level.isClientSide) {
-                // バスケット内の最も栄養価の高い食べ物を取得
-                ItemStack food = getMostNutritiousFood(stack, player);
-                if (!food.isEmpty()) {
-                    // バスケットから食べ物を消費
-                    shrinkMostNutritiousItemFromInventory(stack, player);
+            if (!level.isClientSide && !food.isEmpty()) {
+                // 確定した食べ物を直接指定してバスケットから消費する
+                shrinkItemFromInventory(stack, food);
 
-                    // クラフト残留アイテムの処理（例：ミルクバケツ→空バケツ）
-                    if (food.getItem().getCraftingRemainingItem() != null) {
-                        ItemStack containerItem = food.getItem().getCraftingRemainingItem().getDefaultInstance();
-                        if (!player.getInventory().add(containerItem)) {
-                            player.drop(containerItem, false);
-                        }
-                    }
+                // 容器アイテムの返却（ボウル、ガラス瓶など）
+                returnContainerItem(food, player);
 
-                    // 食料エフェクトの適用（例：金のリンゴの効果）
-                    FoodProperties foodProps = food.getItem().getFoodProperties();
-                    if (foodProps != null) {
-                        for (var pair : foodProps.getEffects()) {
-                            if (pair.getFirst() != null && level.random.nextFloat() < pair.getSecond()) {
-                                entity.addEffect(new MobEffectInstance(pair.getFirst()));
-                            }
+                // 食料エフェクトの適用（例：金のリンゴの効果）
+                FoodProperties foodProps = food.getItem().getFoodProperties();
+                if (foodProps != null) {
+                    for (var pair : foodProps.getEffects()) {
+                        if (pair.getFirst() != null && level.random.nextFloat() < pair.getSecond()) {
+                            entity.addEffect(new MobEffectInstance(pair.getFirst()));
                         }
                     }
                 }
@@ -137,6 +135,30 @@ public class WickerBasketItem extends Item {
         CompoundTag tag = stack.getOrCreateTag();
         tag.put(INVENTORY_TAG, container.createTag());
         stack.setTag(tag);
+    }
+
+    /**
+     * 食べ物アイテムに応じた容器アイテムをプレイヤーに返却する。
+     * BowlFoodItem（シチュー類）→ ボウル、HoneyBottleItem → ガラス瓶、
+     * getCraftingRemainingItem()（ミルクバケツ等）→ 対応する容器アイテム。
+     */
+    private static void returnContainerItem(ItemStack food, Player player) {
+        Item foodItem = food.getItem();
+        ItemStack containerItem = ItemStack.EMPTY;
+
+        if (foodItem.getCraftingRemainingItem() != null) {
+            containerItem = foodItem.getCraftingRemainingItem().getDefaultInstance();
+        } else if (foodItem instanceof BowlFoodItem) {
+            containerItem = new ItemStack(Items.BOWL);
+        } else if (foodItem instanceof HoneyBottleItem) {
+            containerItem = new ItemStack(Items.GLASS_BOTTLE);
+        }
+
+        if (!containerItem.isEmpty()) {
+            if (!player.getInventory().add(containerItem)) {
+                player.drop(containerItem, false);
+            }
+        }
     }
 
     private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack) {
