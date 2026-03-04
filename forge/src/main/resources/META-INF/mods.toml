@@ -34,6 +34,13 @@ versionRange = "[9.2.14,)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies.solclassic]]
+modId = "nutritionalbalance"
+mandatory = false
+versionRange = "[5.0.0,)"
+ordering = "BEFORE"
+side = "BOTH"
+
 [modproperties.solclassic]
 catalogueImageIcon="icon.png"
 catalogueBackground="catalogue_background_sol.png"
