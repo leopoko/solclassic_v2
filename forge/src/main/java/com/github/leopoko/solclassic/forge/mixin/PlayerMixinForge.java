@@ -26,7 +26,8 @@ public class PlayerMixinForge {
             method = "eat",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/food/FoodData;eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V"),
+                    target = "Lnet/minecraft/world/food/FoodData;eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V",
+                    remap = false),
             remap = true
     )
     private void modifyFoodRestoration(FoodData instance, Item item, ItemStack entity, LivingEntity arg) {
