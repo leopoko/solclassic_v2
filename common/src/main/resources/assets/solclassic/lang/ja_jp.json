@@ -7,5 +7,11 @@
   "item.solclassic.wicker_basket": "編みかご",
   "container.wicker_basket": "編みかご",
   "tooltip.wicker_basket.description1": "右クリックで最も回復量が高い食べ物を食べる。",
-  "tooltip.wicker_basket.description2": "Shift + 右クリックで開く。"
+  "tooltip.wicker_basket.description2": "Shift + 右クリックで開く。",
+  "item.solclassic.food_history_book": "食事記録の本",
+  "tooltip.food_history_book.description": "右クリックで食事記録を確認",
+  "gui.food_history_book.title": "食事記録",
+  "gui.food_history_book.summary": "%s種類の食べ物を食べました",
+  "gui.food_history_book.empty": "まだ食事記録がありません",
+  "gui.food_history_book.page": "%s / %s ページ"
 }

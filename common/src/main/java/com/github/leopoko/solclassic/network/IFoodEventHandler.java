@@ -61,4 +61,13 @@ public interface IFoodEventHandler {
      * @return 直近 n 件中に対象アイテムが出現した回数
      */
     public int countFoodEatenRecent(Player player, ItemStack target, int n);
+
+    /**
+     * クライアント側で、指定されたプレイヤーの食事履歴を取得します。
+     * サーバー側でも使用可能です。
+     *
+     * @param player 対象のプレイヤー（サーバー/クライアントどちらでも可）
+     * @return 食事履歴の LinkedList（存在しない場合は空リスト）
+     */
+    public LinkedList<ItemStack> getClientFoodHistory(Player player);
 }
