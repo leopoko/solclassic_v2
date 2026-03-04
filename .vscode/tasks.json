@@ -1,0 +1,75 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Fabric Client 起動 (デバッグ)",
+      "type": "shell",
+      "command": "./gradlew :fabric:runClient --debug-jvm",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": {
+            "regexp": "^$"
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*Listening for transport dt_socket.*$",
+            "endsPattern": "^.*Listening for transport dt_socket.*$"
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Forge Client 起動 (デバッグ)",
+      "type": "shell",
+      "command": "./gradlew :forge:runClient --debug-jvm",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": {
+            "regexp": "^$"
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*Listening for transport dt_socket.*$",
+            "endsPattern": "^.*Listening for transport dt_socket.*$"
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Fabric ビルド",
+      "type": "shell",
+      "command": "./gradlew :fabric:build",
+      "group": "build"
+    },
+    {
+      "label": "Forge ビルド",
+      "type": "shell",
+      "command": "./gradlew :forge:build",
+      "group": "build"
+    },
+    {
+      "label": "全体ビルド",
+      "type": "shell",
+      "command": "./gradlew build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "ソース生成",
+      "type": "shell",
+      "command": "./gradlew genSources"
+    }
+  ]
+}

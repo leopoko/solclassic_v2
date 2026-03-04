@@ -3,25 +3,21 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Fabric Client 起動",
-      "request": "launch",
-      "projectName": "fabric",
-      "preLaunchTask": "gradle: :fabric:configureLaunch",
-      "mainClass": "",
-      "vmArgs": "",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/fabric/run"
+      "name": "Fabric Client デバッグ",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "Fabric Client 起動 (デバッグ)",
+      "projectName": "fabric"
     },
     {
       "type": "java",
-      "name": "Forge Client 起動",
-      "request": "launch",
-      "projectName": "forge",
-      "preLaunchTask": "gradle: :forge:configureLaunch",
-      "mainClass": "",
-      "vmArgs": "",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/forge/run"
+      "name": "Forge Client デバッグ",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "Forge Client 起動 (デバッグ)",
+      "projectName": "forge"
     }
   ]
 }
