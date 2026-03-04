@@ -22,29 +22,8 @@ public class LivingEntityMixinFabric {
             if (!itemId.equals("solclassic:wicker_basket")) {
                 stack.shrink(1);
             }
-            else {
-                if (stack.getItem() instanceof WickerBasketItem) {
-                    ItemStack mostNutritiousItem = WickerBasketItem.getMostNutritiousFood(stack, (Player)entity);
-                    WickerBasketItem.shrinkMostNutritiousItemFromInventory(stack, (Player)entity);
-
-                    if (!mostNutritiousItem.is(ItemStack.EMPTY.getItem())) {
-
-                        if (mostNutritiousItem.getItem().getCraftingRemainingItem() != null) {
-                            ItemStack containerItem = mostNutritiousItem.getItem().getCraftingRemainingItem().getDefaultInstance();
-                            if (!((Player)entity).getInventory().add(containerItem)) {
-                                ((Player)entity).drop(containerItem, false);
-                            }
-                        }
-
-                        net.minecraft.world.food.FoodProperties foodProps = mostNutritiousItem.getItem().getFoodProperties();
-                        if (foodProps != null && foodProps.getEffects() != null) {
-                            for (var effect : foodProps.getEffects()) {
-                                entity.addEffect(effect.getFirst());
-                            }
-                        }
-                    }
-                }
-            }
+            // WickerBasketの場合はfinishUsingItem()で消費処理を行うため、
+            // ここではWickerBasket自体のshrinkをスキップするだけ
         }
     }
 

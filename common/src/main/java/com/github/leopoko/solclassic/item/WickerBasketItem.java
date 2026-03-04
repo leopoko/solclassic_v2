@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.ChestMenu;
@@ -31,6 +32,45 @@ public class WickerBasketItem extends Item {
 
     public WickerBasketItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull net.minecraft.world.entity.LivingEntity entity) {
+        if (entity instanceof Player player) {
+            // eat()を呼んでPlayerMixinによる栄養値計算と食事履歴の記録を行う
+            // LivingEntityMixinはWickerBasketのshrink()をスキップする
+            entity.eat(level, stack);
+
+            if (!level.isClientSide) {
+                // バスケット内の最も栄養価の高い食べ物を取得
+                ItemStack food = getMostNutritiousFood(stack, player);
+                if (!food.isEmpty()) {
+                    // バスケットから食べ物を消費
+                    shrinkMostNutritiousItemFromInventory(stack, player);
+
+                    // クラフト残留アイテムの処理（例：ミルクバケツ→空バケツ）
+                    if (food.getItem().getCraftingRemainingItem() != null) {
+                        ItemStack containerItem = food.getItem().getCraftingRemainingItem().getDefaultInstance();
+                        if (!player.getInventory().add(containerItem)) {
+                            player.drop(containerItem, false);
+                        }
+                    }
+
+                    // 食料エフェクトの適用（例：金のリンゴの効果）
+                    FoodProperties foodProps = food.getItem().getFoodProperties();
+                    if (foodProps != null) {
+                        for (var pair : foodProps.getEffects()) {
+                            if (pair.getFirst() != null && level.random.nextFloat() < pair.getSecond()) {
+                                entity.addEffect(new MobEffectInstance(pair.getFirst()));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return stack;
+        }
+        return super.finishUsingItem(stack, level, entity);
     }
 
     @Override
