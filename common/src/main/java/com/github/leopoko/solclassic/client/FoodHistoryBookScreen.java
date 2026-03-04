@@ -28,7 +28,9 @@ public class FoodHistoryBookScreen extends Screen {
     private static final int BOOK_WIDTH = 146;
     private static final int BOOK_HEIGHT = 180;
     // 1ページあたりの表示アイテム数
-    private static final int ITEMS_PER_PAGE = 7;
+    private static final int ITEMS_PER_PAGE = 6;
+    // エントリテキストの縮小倍率
+    private static final float TEXT_SCALE = 0.75f;
     // エントリの描画開始オフセット
     private static final int ENTRY_START_Y = 30;
     private static final int ENTRY_HEIGHT = 18;
@@ -164,22 +166,32 @@ public class FoodHistoryBookScreen extends Screen {
                 // アイテムアイコン（16x16）
                 graphics.renderItem(entry.stack, entryX, entryY);
 
+                // テキスト部分を縮小描画
+                float invScale = 1.0f / TEXT_SCALE;
+                int textX = entryX + 18;
+                int textY = entryY + 5;
+
+                graphics.pose().pushPose();
+                graphics.pose().scale(TEXT_SCALE, TEXT_SCALE, 1.0f);
+
                 // 食べ物名（省略対応）
                 String name = entry.stack.getHoverName().getString();
-                int maxNameWidth = 62;
+                int maxNameWidth = (int) (82 * invScale);
                 if (this.font.width(name) > maxNameWidth) {
                     name = this.font.plainSubstrByWidth(name, maxNameWidth - this.font.width("..")) + "..";
                 }
-                graphics.drawString(this.font, name, entryX + 18, entryY + 4, 0x000000, false);
+                graphics.drawString(this.font, name, (int) (textX * invScale), (int) (textY * invScale), 0x000000, false);
 
                 // 回数
                 String times = "\u00d7" + entry.count;
-                graphics.drawString(this.font, times, entryX + 82, entryY + 4, 0x555555, false);
+                graphics.drawString(this.font, times, (int) ((textX + 84) * invScale), (int) (textY * invScale), 0x555555, false);
 
                 // 減衰率（色分け: 緑=高い、黄色=中、赤=低い）
                 String percent = entry.multiplierPercent + "%";
                 int color = getMultiplierColor(entry.multiplierPercent);
-                graphics.drawString(this.font, percent, entryX + 100, entryY + 4, color, false);
+                graphics.drawString(this.font, percent, (int) ((textX + 100) * invScale), (int) (textY * invScale), color, false);
+
+                graphics.pose().popPose();
             }
         }
 
