@@ -4,6 +4,7 @@ import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.forge.config.SolClassicConfigForge;
 import com.github.leopoko.solclassic.forge.integration.AppleSkinEventHandler;
 import com.github.leopoko.solclassic.forge.integration.DietIntegrationForge;
+import com.github.leopoko.solclassic.forge.integration.DietTooltipHandlerForge;
 import com.github.leopoko.solclassic.forge.integration.NutritionalBalanceIntegrationForge;
 import com.github.leopoko.solclassic.forge.network.FoodEventHandlerForge;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
@@ -25,7 +26,7 @@ public final class SolclassicForge {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         EventBuses.registerModEventBus(Solclassic.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SolClassicConfigForge.SERVER_CONFIG);
-        modEventBus.addListener(this::appleSkinInit);
+        modEventBus.addListener(this::clientInit);
         ModNetworking.registerPackets();
 
         FoodHistoryHolder.INSTANCE = new FoodEventHandlerForge();
@@ -44,9 +45,13 @@ public final class SolclassicForge {
         Solclassic.init();
     }
 
-    private void appleSkinInit(final FMLClientSetupEvent event) {
+    private void clientInit(final FMLClientSetupEvent event) {
         if (ModList.get().isLoaded("appleskin")) {
             MinecraftForge.EVENT_BUS.register(new AppleSkinEventHandler());
+        }
+        // Diet MODツールチップ連携: クライアント側でのみ登録
+        if (ModList.get().isLoaded("diet")) {
+            DietTooltipHandlerForge.register();
         }
     }
 }
