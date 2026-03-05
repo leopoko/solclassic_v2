@@ -60,8 +60,8 @@ dependencies {
     modRuntimeOnly "mezz.jei:jei-1.20.1-forge:15.20.0.106"
     modRuntimeOnly "squeek.appleskin:appleskin-forge:mc1.20.1-2.5.1"
     //modRuntimeOnly "curse.maven:phantasm-565254:6149582"
-    //modRuntimeOnly "curse.maven:diet-443570:4813904"
-    //modRuntimeOnly "curse.maven:spectrelib-993948:5217603"
+    modRuntimeOnly "curse.maven:diet-443570:4813904"
+    modRuntimeOnly "curse.maven:spectrelib-993948:5217603"
     //modRuntimeOnly files("libs/pizzadelight-1.20.1-1.0.0.jar")
 }
 
