@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.03] - 2026-03-05
+
+### Added
+- Added compatibility with Diet mod.
+- Added partial compatibility with Nutritional Balance.
+- Added a meal record book that allows players to check their meal history.
+### Fixed
+- Fixed a bug where items with a stack size of 1 were not recorded when eaten.
+- Fixed a bug where meal effects did not trigger when food was eaten from a Wicker Basket.
+
+---
+
+## [2.03] - 2026-03-05 (日本語)
+
+### 追加
+- Diet modとの互換性を追加。
+- Nutritional Balanceとの部分的な互換性を追加。
+- 食事履歴の確認できる食事記録の本を追加。
+
+### 修正
+- スタックが1のアイテムを食べた場合、記録されないバグを修正。
+- Wicker basketで食べたときに食事の効果が発動しなかったバグの修正。
+
+---
+
 ## [2.02] - 2026-03-05
 
 ### Added
