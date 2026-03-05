@@ -5,6 +5,7 @@ import com.github.leopoko.solclassic.forge.config.SolClassicConfigForge;
 import com.github.leopoko.solclassic.forge.integration.AppleSkinEventHandler;
 import com.github.leopoko.solclassic.forge.integration.DietIntegrationForge;
 import com.github.leopoko.solclassic.forge.integration.DietTooltipHandlerForge;
+import com.github.leopoko.solclassic.forge.integration.NutritionalBalanceIntegrationForge;
 import com.github.leopoko.solclassic.forge.network.FoodEventHandlerForge;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.ModNetworking;
@@ -33,6 +34,11 @@ public final class SolclassicForge {
         // Diet MOD連携: インストールされている場合のみイベントハンドラを登録
         if (ModList.get().isLoaded("diet")) {
             DietIntegrationForge.register();
+        }
+
+        // Nutritional Balance MOD連携: インストールされている場合のみイベントハンドラを登録
+        if (ModList.get().isLoaded("nutritionalbalance")) {
+            NutritionalBalanceIntegrationForge.register();
         }
 
         // Run our common setup.
