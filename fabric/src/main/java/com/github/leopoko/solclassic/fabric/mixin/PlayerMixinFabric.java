@@ -34,10 +34,19 @@ public class PlayerMixinFabric {
         String itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
 
         if (itemId.equals("solclassic:wicker_basket")) {
+            // 旧方式: バスケット自体がPlayer.eat()に渡された場合（互換性のため保持）
             WickerBasketItem wickerBasketItem = (WickerBasketItem) itemStack.getItem();
             itemStack = wickerBasketItem.getMostNutritiousFood(itemStack, player);
-            // Update itemId to the actual food item after extraction
             itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
+        } else {
+            // 委譲方式: WickerBasketItem.finishUsingItem()がfoodCopy.finishUsingItem()に委譲し、
+            // その中でplayer.eat(foodCopy)が呼ばれた場合。
+            // itemStackは既に実際の食べ物だが、player.getUseItem()でバスケット使用中かを検出。
+            // （Fabric版では現在追加の処理は不要だが、将来のMOD連携のため検出ロジックを用意）
+            ItemStack useItem = player.getUseItem();
+            if (!useItem.isEmpty() && useItem.getItem() instanceof WickerBasketItem) {
+                // 委譲方式ではitemStackは既に実際の食べ物なので追加の処理は不要
+            }
         }
 
         for (String itemID_ : SolclassicConfigData.foodBlacklist) {

@@ -39,11 +39,21 @@ public class PlayerMixinForge {
 
         boolean isWickerBasket = false;
         if (itemId.equals("solclassic:wicker_basket")){
+            // 旧方式: バスケット自体がPlayer.eat()に渡された場合（互換性のため保持）
             isWickerBasket = true;
             WickerBasketItem wickerBasketItem = (WickerBasketItem) entity.getItem();
             entity = wickerBasketItem.getMostNutritiousFood(entity, player);
             // 実際の食べ物アイテムでitemIdを更新
             itemId = BuiltInRegistries.ITEM.getKey(entity.getItem()).toString();
+        } else {
+            // 委譲方式: WickerBasketItem.finishUsingItem()がfoodCopy.finishUsingItem()に委譲し、
+            // その中でplayer.eat(foodCopy)が呼ばれた場合。
+            // entityは既に実際の食べ物だが、player.getUseItem()はまだバスケットを指しているため
+            // これでWickerBasket経由の食事を検出できる。
+            ItemStack useItem = player.getUseItem();
+            if (!useItem.isEmpty() && useItem.getItem() instanceof WickerBasketItem) {
+                isWickerBasket = true;
+            }
         }
 
         for (String itemID_ : SolClassicConfigForge.CONFIG.foodBlacklist.get()) {
