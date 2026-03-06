@@ -49,7 +49,9 @@ public class DietTooltipHandlerForge {
         if (!stack.getItem().isEdible()) return;
 
         if (stack.getItem() instanceof WickerBasketItem) {
-            // WickerBasket: 中の最も栄養価の高い食べ物のDietツールチップを自前で生成
+            // WickerBasket: DietがWickerBasket自体のFoodPropertiesで追加したエントリを削除し、
+            // 中の最も栄養価の高い食べ物の情報で再生成する
+            ClientTooltipHandler.removeDietTooltips(event.getToolTip());
             ItemStack actualFood = WickerBasketItem.getMostNutritiousFood(stack, player);
             if (actualFood.isEmpty()) return;
             float multiplier = FoodCalculator.CalculateMultiplier(actualFood, player);
