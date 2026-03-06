@@ -7,6 +7,7 @@ import com.github.leopoko.solclassic.forge.integration.AppleSkinEventHandler;
 import com.github.leopoko.solclassic.forge.integration.DietIntegrationForge;
 import com.github.leopoko.solclassic.forge.integration.DietTooltipHandlerForge;
 import com.github.leopoko.solclassic.forge.integration.NutritionalBalanceIntegrationForge;
+import com.github.leopoko.solclassic.forge.integration.NutritionalBalanceTooltipHandlerForge;
 import com.github.leopoko.solclassic.forge.network.FoodEventHandlerForge;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.ModNetworking;
@@ -75,6 +76,10 @@ public final class SolclassicForge {
         // Diet MODツールチップ連携: クライアント側でのみ登録
         if (ModList.get().isLoaded("diet")) {
             DietTooltipHandlerForge.register();
+        }
+        // Nutritional Balance MODツールチップ連携: クライアント側でのみ登録
+        if (ModList.get().isLoaded("nutritionalbalance")) {
+            NutritionalBalanceTooltipHandlerForge.register();
         }
     }
 }

@@ -17,7 +17,30 @@ import java.util.List;
 public class ClientTooltipHandler {
     public static void init() {
         ClientTooltipEvent.ITEM.register((ItemStack stack, List<Component> tooltips, TooltipFlag flag) -> {
-            if (stack.getItem().isEdible()) {
+            if (stack.getItem() instanceof WickerBasketItem) {
+                // WickerBasket: 選択された食べ物の情報を表示
+                Player player = Minecraft.getInstance().player;
+                if (player != null) {
+                    ItemStack food = WickerBasketItem.getMostNutritiousFood(stack, player);
+                    if (!food.isEmpty()) {
+                        FoodProperties foodProps = food.getItem().getFoodProperties();
+                        if (foodProps != null) {
+                            float multiplier = FoodCalculator.CalculateMultiplier(food, player);
+                            int nutrition = FoodCalculator.CalculateNutrition(foodProps.getNutrition(), multiplier);
+                            // 選択された食べ物の名前と減衰後の栄養値を表示
+                            tooltips.add(Component.translatable("tooltip.wicker_basket.food_info",
+                                    food.getHoverName(), nutrition));
+                            // 減衰率を表示
+                            float reductionPercent = (1f - multiplier) * 100f;
+                            String s = Integer.toString((int) reductionPercent);
+                            if (!s.equals("0")) {
+                                tooltips.add(Component.translatable("tooltip.food_reduction", s));
+                            }
+                        }
+                    }
+                }
+            } else if (stack.getItem().isEdible()) {
+                // 通常の食べ物: 減衰率のみ表示
                 FoodProperties foodProps = stack.getItem().getFoodProperties();
                 if (foodProps != null) {
 

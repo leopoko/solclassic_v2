@@ -8,6 +8,7 @@
   "container.wicker_basket": "編みかご",
   "tooltip.wicker_basket.description1": "右クリックで最も回復量が高い食べ物を食べる。",
   "tooltip.wicker_basket.description2": "Shift + 右クリックで開く。",
+  "tooltip.wicker_basket.food_info": "§7次に食べる: %s (満腹度: %s)",
   "item.solclassic.food_history_book": "食事記録の本",
   "tooltip.food_history_book.description": "右クリックで食事記録を確認",
   "gui.food_history_book.title": "食事記録",

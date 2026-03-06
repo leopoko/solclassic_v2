@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -27,14 +28,39 @@ public class WickerBasketItem extends Item {
     private static final String INVENTORY_TAG = "basket_inventory";
     public static final int SLOT_COUNT = 9;
 
+    /**
+     * ダミーのFoodProperties。AppleSkinのFoodValuesEvent発火に必要。
+     * 実際の栄養値はAppleSkinEventHandlerで選択された食べ物の値に上書きされる。
+     * nutritionとsaturationは0に設定し、NB/Dietが誤って栄養素を加算しないようにする。
+     */
+    private static final FoodProperties DUMMY_FOOD_PROPERTIES =
+            new FoodProperties.Builder().nutrition(0).saturationMod(0).build();
+
     public WickerBasketItem(Properties properties) {
         super(properties);
     }
 
     /**
+     * AppleSkinがFoodValuesEventを発火するために必要。
+     * WickerBasket自体はFoodPropertiesを持たないが（アイテム登録時に指定していない）、
+     * このオーバーライドによりisEdible()がtrueを返し、AppleSkinがツールチップを表示する。
+     */
+    @Override
+    public boolean isEdible() {
+        return true;
+    }
+
+    /**
+     * ダミーのFoodPropertiesを返す。AppleSkinのFoodValuesEvent発火に必要。
+     * 実際の栄養値はAppleSkinEventHandlerで選択された食べ物の値に上書きされる。
+     */
+    @Override
+    public @Nullable FoodProperties getFoodProperties() {
+        return DUMMY_FOOD_PROPERTIES;
+    }
+
+    /**
      * 食べるアニメーションの継続時間を返す。
-     * WickerBasketはFoodPropertiesを持たないため（Diet/NB MODとの誤認防止）、
-     * ここで明示的に食べる時間を指定する。
      */
     @Override
     public int getUseDuration(@NotNull ItemStack stack) {
