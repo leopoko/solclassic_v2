@@ -15,7 +15,6 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
@@ -28,8 +27,12 @@ public final class Solclassic {
         final DeferredRegister<Item> ITEMS = DeferredRegister.create(MOD_ID, Registries.ITEM);
 
         // アイテムの登録
+        // WickerBasketにはFoodPropertiesを設定しない。
+        // FoodPropertiesを設定するとDiet/Nutritional Balance等のMODがバスケット自体を
+        // 食べ物として扱い、誤った栄養素（Carbs等）がツールチップや計算に反映される。
+        // 食べるアニメーションはWickerBasketItem側のgetUseDuration/getUseAnimationで実現する。
         final RegistrySupplier<Item> WICKER_BASKET = ITEMS.register("wicker_basket", () ->
-                new WickerBasketItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f).build()).arch$tab(CreativeModeTabs.TOOLS_AND_UTILITIES)));
+                new WickerBasketItem(new Item.Properties().stacksTo(1).arch$tab(CreativeModeTabs.TOOLS_AND_UTILITIES)));
 
         final RegistrySupplier<Item> BASKET = ITEMS.register("basket", () ->
                 new BasketItem(new Item.Properties().stacksTo(1).arch$tab(CreativeModeTabs.TOOLS_AND_UTILITIES)));

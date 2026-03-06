@@ -31,6 +31,25 @@ public class WickerBasketItem extends Item {
         super(properties);
     }
 
+    /**
+     * 食べるアニメーションの継続時間を返す。
+     * WickerBasketはFoodPropertiesを持たないため（Diet/NB MODとの誤認防止）、
+     * ここで明示的に食べる時間を指定する。
+     */
+    @Override
+    public int getUseDuration(@NotNull ItemStack stack) {
+        return 32; // バニラの通常食べ物と同じ
+    }
+
+    /**
+     * 食べるアニメーションの種類を返す。
+     * FoodPropertiesがなくても食べるアニメーションを再生するためにオーバーライド。
+     */
+    @Override
+    public @NotNull net.minecraft.world.item.UseAnim getUseAnimation(@NotNull ItemStack stack) {
+        return net.minecraft.world.item.UseAnim.EAT;
+    }
+
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull net.minecraft.world.entity.LivingEntity entity) {
         if (entity instanceof Player player) {
