@@ -31,6 +31,9 @@ public class NutritionalBalanceIntegrationForge {
 
     // NB処理前の栄養素値を一時保存するキャッシュ
     private static final Map<UUID, Map<String, Float>> preProcessValues = new ConcurrentHashMap<>();
+    // HIGHEST段階で取得した減衰情報を保存するキャッシュ
+    // Diet MODがFoodDecayTracker.getAndClear()で情報を消去する前に確保するために必要
+    private static final Map<UUID, FoodDecayTracker.DecayInfo> savedDecayInfo = new ConcurrentHashMap<>();
 
     /**
      * Forgeイベントバスにハンドラを登録する。
@@ -47,6 +50,14 @@ public class NutritionalBalanceIntegrationForge {
     public static void beforeNutritionalBalance(LivingEntityUseItemEvent.Finish event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (event.getItem().getFoodProperties(player) == null) return;
+
+        // FoodDecayTrackerの減衰情報をこの段階で先行保存する。
+        // Diet MODのイベントハンドラがFoodDecayTracker.getAndClear()で情報を消去するため、
+        // LOWEST段階では取得できなくなる可能性がある。
+        FoodDecayTracker.DecayInfo decayInfo = FoodDecayTracker.get(player);
+        if (decayInfo != null) {
+            savedDecayInfo.put(player.getUUID(), decayInfo);
+        }
 
         try {
             PlayerNutritionData worldData = PlayerNutritionData.getWorldNutritionData();
@@ -76,8 +87,10 @@ public class NutritionalBalanceIntegrationForge {
         Map<String, Float> preValues = preProcessValues.remove(player.getUUID());
         if (preValues == null) return;
 
-        // FoodDecayTrackerから減衰情報を取得（削除しない: Diet等の他ハンドラも参照するため）
-        FoodDecayTracker.DecayInfo info = FoodDecayTracker.get(player);
+        // HIGHESTで先行保存した減衰情報を使用する。
+        // FoodDecayTrackerは既にDiet MODのgetAndClear()で消去されている可能性があるため、
+        // 直接FoodDecayTracker.get()ではなく保存済みの情報を参照する。
+        FoodDecayTracker.DecayInfo info = savedDecayInfo.remove(player.getUUID());
         if (info == null) return;
 
         float multiplier = info.multiplier();

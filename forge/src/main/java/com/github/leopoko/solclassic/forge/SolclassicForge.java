@@ -2,6 +2,7 @@ package com.github.leopoko.solclassic.forge;
 
 import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.forge.config.SolClassicConfigForge;
+import com.github.leopoko.solclassic.forge.config.SolClassicConfigInitForge;
 import com.github.leopoko.solclassic.forge.integration.AppleSkinEventHandler;
 import com.github.leopoko.solclassic.forge.integration.DietIntegrationForge;
 import com.github.leopoko.solclassic.forge.integration.DietTooltipHandlerForge;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -27,6 +29,8 @@ public final class SolclassicForge {
         EventBuses.registerModEventBus(Solclassic.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SolClassicConfigForge.SERVER_CONFIG);
         modEventBus.addListener(this::clientInit);
+        modEventBus.addListener(this::onConfigLoading);
+        modEventBus.addListener(this::onConfigReloading);
         ModNetworking.registerPackets();
 
         FoodHistoryHolder.INSTANCE = new FoodEventHandlerForge();
@@ -43,6 +47,25 @@ public final class SolclassicForge {
 
         // Run our common setup.
         Solclassic.init();
+    }
+
+    /**
+     * サーバー設定がロードまたはクライアントに同期された際に、
+     * 共通設定データ（SolclassicConfigData）を更新する。
+     * ForgeConfigSpecのSERVER設定はクライアントへ自動同期されるが、
+     * SolclassicConfigDataの静的フィールドは自動更新されないため、
+     * ここで明示的に反映する。
+     */
+    private void onConfigLoading(final ModConfigEvent.Loading event) {
+        if (event.getConfig().getSpec() == SolClassicConfigForge.SERVER_CONFIG) {
+            SolClassicConfigInitForge.init();
+        }
+    }
+
+    private void onConfigReloading(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getSpec() == SolClassicConfigForge.SERVER_CONFIG) {
+            SolClassicConfigInitForge.init();
+        }
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
