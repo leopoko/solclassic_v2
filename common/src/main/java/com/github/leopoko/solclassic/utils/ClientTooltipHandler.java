@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.utils;
 
+import com.github.leopoko.solclassic.item.WickerBasketItem;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,15 @@ public class ClientTooltipHandler {
 
                     if (Minecraft.getInstance().player != null) {
                         Player player = Minecraft.getInstance().player;
-                        float multiplier = FoodCalculator.CalculateMultiplier(stack, player);
+
+                        // WickerBasketの場合、中の最も栄養価の高い食べ物で計算
+                        ItemStack targetFood = stack;
+                        if (stack.getItem() instanceof WickerBasketItem) {
+                            targetFood = WickerBasketItem.getMostNutritiousFood(stack, player);
+                            if (targetFood.isEmpty()) return;
+                        }
+
+                        float multiplier = FoodCalculator.CalculateMultiplier(targetFood, player);
                         multiplier = (1f - multiplier) * 100f;
                         String s = Integer.toString((int) multiplier);
 
