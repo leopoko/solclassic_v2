@@ -34,7 +34,8 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
-    //modCompileOnlyApi "squeek.appleskin:appleskin-fabric:mc1.20-2.5.1:api"
+    // AppleSkin連携（コンパイル時のみ、ソフト依存）
+    modCompileOnly "squeek.appleskin:appleskin-fabric:mc1.20-2.5.1"
 
     // TOML設定ファイルの読み込みに使用
     implementation "org.tomlj:tomlj:1.1.1"
