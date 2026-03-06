@@ -64,6 +64,7 @@ public class ClientTooltipHandler {
                 // ヘッダー直前の空行も削除
                 if (i > 0 && tooltips.get(i - 1).getString().isEmpty()) {
                     tooltips.remove(i - 1);
+                    i--; // 空行削除分のインデックス調整
                 }
             }
         }
