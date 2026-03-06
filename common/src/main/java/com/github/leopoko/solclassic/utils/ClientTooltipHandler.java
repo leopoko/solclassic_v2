@@ -45,6 +45,31 @@ public class ClientTooltipHandler {
     }
 
     /**
+     * Diet MODが追加したツールチップエントリをすべて削除する。
+     * WickerBasket用: DietがWickerBasket自体のFoodPropertiesで追加したエントリを削除し、
+     * 中の食べ物に基づいて正しいエントリを再生成するために使用する。
+     *
+     * @param tooltips ツールチップのComponentリスト
+     */
+    public static void removeDietTooltips(List<Component> tooltips) {
+        for (int i = tooltips.size() - 1; i >= 0; i--) {
+            Component component = tooltips.get(i);
+            if (!(component.getContents() instanceof TranslatableContents tc)) continue;
+            String key = tc.getKey();
+
+            if ("tooltip.diet.group".equals(key) || "tooltip.diet.group_".equals(key)) {
+                tooltips.remove(i);
+            } else if ("tooltip.diet.eaten".equals(key)) {
+                tooltips.remove(i);
+                // ヘッダー直前の空行も削除
+                if (i > 0 && tooltips.get(i - 1).getString().isEmpty()) {
+                    tooltips.remove(i - 1);
+                }
+            }
+        }
+    }
+
+    /**
      * Diet MODのツールチップエントリにSoL Classicの減衰倍率を適用する。
      * Diet MODが追加したTranslatableComponent（キー "tooltip.diet.group"）のパーセンテージ値を
      * 倍率に応じてスケーリングする。
