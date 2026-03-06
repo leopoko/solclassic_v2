@@ -15,9 +15,13 @@ public class FoodCalculator {
     }
 
     public static float ShortMultiplier(ItemStack itemstack, Player player) {
+        List<Float> modifiers = SolclassicConfigData.shortFoodDecayModifiers;
+        if (modifiers == null || modifiers.isEmpty()) {
+            return 1.0f;
+        }
         int count = FoodHistoryHolder.INSTANCE.countFoodEatenRecent(player,itemstack, SolclassicConfigData.maxShortFoodHistorySize);
-        count = Math.min(count, SolclassicConfigData.shortFoodDecayModifiers.size() - 1);
-        return SolclassicConfigData.shortFoodDecayModifiers.get(count);
+        count = Math.min(count, modifiers.size() - 1);
+        return modifiers.get(count);
     }
 
     public static float CalculateMultiplier(ItemStack itemstack, Player player){
