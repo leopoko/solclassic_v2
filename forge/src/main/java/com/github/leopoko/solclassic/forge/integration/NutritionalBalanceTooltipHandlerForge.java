@@ -2,6 +2,7 @@ package com.github.leopoko.solclassic.forge.integration;
 
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,10 @@ import java.util.List;
  * - WickerBasket: 選択された食べ物のNBツールチップ（減衰倍率適用済み）を表示
  * - 通常食べ物: NBの品質値にSoL Classicの減衰倍率を適用
  *
- * NBツールチップ形式: "Nutrients: Carbs(5.0NU)" （Component.nullToEmpty リテラル文字列）
+ * NBツールチップ実際の形式（色コード付き）:
+ *   §7Nutrients: §2Carbs§7 (5.0NU)§r
+ * getString()で取得する文字列にも§コードが含まれるため、
+ * ChatFormatting.stripFormatting()で除去してからラベル検索する。
  */
 public class NutritionalBalanceTooltipHandlerForge {
 
@@ -42,7 +46,6 @@ public class NutritionalBalanceTooltipHandlerForge {
         String nutrientsLabel = I18n.get("nutritionalbalance.nutrients");
 
         if (stack.getItem() instanceof WickerBasketItem) {
-            // WickerBasket: 選択された食べ物のNBツールチップに差し替え
             replaceWithFoodNBLine(tooltips, nutrientsLabel, stack, player);
             return;
         }
@@ -52,19 +55,27 @@ public class NutritionalBalanceTooltipHandlerForge {
         float multiplier = FoodCalculator.CalculateMultiplier(stack, player);
         if (multiplier >= 1.0f) return;
 
-        scaleNBQuality(tooltips, nutrientsLabel, multiplier);
+        int idx = findNBLine(tooltips, nutrientsLabel);
+        if (idx >= 0) {
+            String raw = tooltips.get(idx).getString();
+            String scaled = applyScale(raw, multiplier);
+            if (!scaled.equals(raw)) {
+                tooltips.set(idx, Component.nullToEmpty(scaled));
+            }
+        }
     }
 
     /**
      * WickerBasketのNBツールチップを、選択された食べ物のNBツールチップに差し替える。
-     * 減衰倍率も適用する。
      */
     private static void replaceWithFoodNBLine(List<Component> tooltips, String nutrientsLabel,
                                                ItemStack basketStack, Player player) {
+        int basketIdx = findNBLine(tooltips, nutrientsLabel);
+        if (basketIdx < 0) return;
+
         ItemStack food = WickerBasketItem.getMostNutritiousFood(basketStack, player);
         if (food.isEmpty()) {
-            // 食べ物がない場合はNB行を削除
-            removeNBLine(tooltips, nutrientsLabel);
+            tooltips.remove(basketIdx);
             return;
         }
 
@@ -77,92 +88,52 @@ public class NutritionalBalanceTooltipHandlerForge {
             isGettingFoodTooltip = false;
         }
 
-        // 食べ物のNB行を検索
-        String foodNBLine = null;
-        for (Component c : foodTooltips) {
-            String text = c.getString();
-            if (text.startsWith(nutrientsLabel)) {
-                foodNBLine = text;
-                break;
-            }
-        }
-
-        if (foodNBLine == null) {
-            // 食べ物にNB行がない場合はバスケットのNB行を削除
-            removeNBLine(tooltips, nutrientsLabel);
+        int foodIdx = findNBLine(foodTooltips, nutrientsLabel);
+        if (foodIdx < 0) {
+            tooltips.remove(basketIdx);
             return;
         }
 
-        // バスケットのNB行を食べ物のNB行に差し替え（倍率適用）
+        String foodNBText = foodTooltips.get(foodIdx).getString();
         float multiplier = FoodCalculator.CalculateMultiplier(food, player);
-        for (int i = 0; i < tooltips.size(); i++) {
-            if (tooltips.get(i).getString().startsWith(nutrientsLabel)) {
-                if (multiplier < 1.0f) {
-                    tooltips.set(i, Component.nullToEmpty(applyScale(foodNBLine, multiplier)));
-                } else {
-                    tooltips.set(i, Component.nullToEmpty(foodNBLine));
-                }
-                return;
-            }
+        if (multiplier < 1.0f) {
+            foodNBText = applyScale(foodNBText, multiplier);
         }
-    }
-
-    /** NBのツールチップ行を削除する */
-    private static void removeNBLine(List<Component> tooltips, String nutrientsLabel) {
-        for (int i = tooltips.size() - 1; i >= 0; i--) {
-            if (tooltips.get(i).getString().startsWith(nutrientsLabel)) {
-                tooltips.remove(i);
-                break;
-            }
-        }
+        tooltips.set(basketIdx, Component.nullToEmpty(foodNBText));
     }
 
     /**
-     * NB行の品質値に倍率を適用した文字列を返す。
-     * 形式例: "Nutrients: Protein,Carbs(5.0NU)" → 括弧内の数値部分をスケーリング
+     * NB行のインデックスを返す。色コード(§)を除去してからラベル検索する。
+     * 見つからない場合は -1。
+     */
+    private static int findNBLine(List<Component> tooltips, String nutrientsLabel) {
+        for (int i = 0; i < tooltips.size(); i++) {
+            String stripped = ChatFormatting.stripFormatting(tooltips.get(i).getString());
+            if (stripped != null && stripped.startsWith(nutrientsLabel)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * NB行（色コード付き生テキスト）の品質値に倍率を適用する。
+     * 形式: "§7Nutrients: §2Carbs§7 (5.0NU)§r" → 括弧内の数値をスケーリング
      */
     private static String applyScale(String text, float multiplier) {
         int openParen = text.lastIndexOf('(');
         int closeParen = text.lastIndexOf(')');
         if (openParen < 0 || closeParen <= openParen) return text;
 
-        String inside = text.substring(openParen + 1, closeParen).trim();
-
-        // "5.0NU" → 数値部分とサフィックスを分離
-        String suffix = "";
-        String numStr = inside;
-        int numEnd = numStr.length();
-        while (numEnd > 0 && !Character.isDigit(numStr.charAt(numEnd - 1)) && numStr.charAt(numEnd - 1) != '.') {
-            numEnd--;
-        }
-        if (numEnd < numStr.length()) {
-            suffix = numStr.substring(numEnd);
-            numStr = numStr.substring(0, numEnd);
-        }
+        String inside = text.substring(openParen + 1, closeParen); // "5.0NU"
+        String numStr = inside.replace("NU", "");
 
         try {
-            float value = Float.parseFloat(numStr.replace(',', '.'));
-            float scaled = (multiplier <= 0.0f) ? 0.0f
-                    : Math.round(value * multiplier * 10.0f) / 10.0f;
-            return text.substring(0, openParen + 1) + scaled + suffix + text.substring(closeParen);
+            float value = Float.parseFloat(numStr);
+            float scaled = multiplier <= 0f ? 0f : Math.round(value * multiplier * 10f) / 10f;
+            return text.substring(0, openParen + 1) + scaled + "NU" + text.substring(closeParen);
         } catch (NumberFormatException e) {
             return text;
-        }
-    }
-
-    /**
-     * 通常食べ物のNBの品質値に減衰倍率を適用する。
-     */
-    private static void scaleNBQuality(List<Component> tooltips, String nutrientsLabel, float multiplier) {
-        for (int i = 0; i < tooltips.size(); i++) {
-            String text = tooltips.get(i).getString();
-            if (!text.startsWith(nutrientsLabel)) continue;
-
-            String scaled = applyScale(text, multiplier);
-            if (!scaled.equals(text)) {
-                tooltips.set(i, Component.nullToEmpty(scaled));
-            }
-            break;
         }
     }
 }
