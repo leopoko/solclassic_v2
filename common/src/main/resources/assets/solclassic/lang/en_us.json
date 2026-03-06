@@ -8,6 +8,7 @@
   "container.wicker_basket": "Wicker Basket",
   "tooltip.wicker_basket.description1": "Right-click to eat the best food",
   "tooltip.wicker_basket.description2": "Shift + Right-click to open.",
+  "tooltip.wicker_basket.food_info": "§7Next: %s (Nutrition: %s)",
   "item.solclassic.food_history_book": "Food History Book",
   "tooltip.food_history_book.description": "Right-click to view food history",
   "gui.food_history_book.title": "Food History",

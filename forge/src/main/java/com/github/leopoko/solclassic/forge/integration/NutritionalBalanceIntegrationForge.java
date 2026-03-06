@@ -3,6 +3,7 @@ package com.github.leopoko.solclassic.forge.integration;
 import com.dannyandson.nutritionalbalance.api.INutritionalBalancePlayer;
 import com.dannyandson.nutritionalbalance.api.IPlayerNutrient;
 import com.dannyandson.nutritionalbalance.nutrients.PlayerNutritionData;
+import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.utils.FoodDecayTracker;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -50,6 +51,10 @@ public class NutritionalBalanceIntegrationForge {
     public static void beforeNutritionalBalance(LivingEntityUseItemEvent.Finish event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (event.getItem().getFoodProperties(player) == null) return;
+
+        // WickerBasketはダミーのFoodPropertiesを持つが、実際の食べ物ではない。
+        // 実際の食べ物はModCompatHelperで別途イベント発火されるため、バスケット自体のイベントはスキップ。
+        if (event.getItem().getItem() instanceof WickerBasketItem) return;
 
         // FoodDecayTrackerの減衰情報をこの段階で先行保存する。
         // Diet MODのイベントハンドラがFoodDecayTracker.getAndClear()で情報を消去するため、
