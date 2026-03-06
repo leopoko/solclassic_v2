@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.04] - 2026-03-06
+
+### Fixed
+- Fixed Wicker Basket being recognized as food by Diet/Nutritional Balance mods, causing incorrect "Carbs" tooltip and nutrient calculations. Removed FoodProperties from Wicker Basket and implemented eat animation via getUseDuration()/getUseAnimation() overrides instead.
+- Fixed Wicker Basket tooltip now showing decay rate and nutritional info based on the selected food inside, instead of the basket itself.
+- Fixed Diet mod tooltip appearing twice on Wicker Basket.
+- Fixed IndexOutOfBoundsException when removing Diet tooltips with blank lines.
+- Fixed Wicker Basket only adding Carbs when used with Nutritional Balance mod. Now correctly detects basket usage via player.getUseItem() to properly notify NB of the actual food consumed.
+- Fixed race condition between Diet and Nutritional Balance event handlers where Diet's FoodDecayTracker.getAndClear() would consume decay data before NB could read it.
+- Fixed Forge config not being applied to SolclassicConfigData. Now syncs on ModConfigEvent.Loading/Reloading.
+- Fixed Nutritional Balance tooltip quality values not reflecting SoL Classic's decay modifier.
+- Fixed Nutritional Balance tooltip color codes (§) preventing tooltip detection.
+
+---
+
+## [2.04] - 2026-03-06 (日本語)
+
+### 修正
+- WickerBasketがFoodPropertiesを持っていたためDiet/Nutritional Balance MODに食べ物として誤認識され、ツールチップに「Carbs」が表示される問題を修正。FoodPropertiesを除去し、食べるアニメーションはgetUseDuration()/getUseAnimation()オーバーライドで実現。
+- WickerBasketのツールチップが、バスケット自体ではなく中の選択された食べ物に基づいて減衰率・栄養情報を表示するよう修正。
+- WickerBasketでDietツールチップが二重表示されるバグを修正。
+- Dietツールチップの空行削除時にIndexOutOfBoundsExceptionが発生する問題を修正。
+- WickerBasket使用時にNutritional BalanceでCarbsしか加算されない問題を修正。player.getUseItem()でバスケット使用を検出し、実際の食べ物をNBに通知する方式に変更。
+- DietとNutritional Balanceのイベントハンドラ間でFoodDecayTrackerの減衰情報が競合する問題を修正。
+- Forgeの設定がSolclassicConfigDataに反映されない問題を修正。ModConfigEvent.Loading/Reloadingで自動同期するよう変更。
+- Nutritional Balanceのツールチップ品質値にSoL Classicの減衰倍率が反映されない問題を修正。
+- Nutritional Balanceのツールチップに含まれる色コード（§）がツールチップ検出を妨げる問題を修正。
+
+---
+
 ## [2.03] - 2026-03-05
 
 ### Added
