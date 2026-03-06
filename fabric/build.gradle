@@ -36,6 +36,10 @@ dependencies {
 
     //modCompileOnlyApi "squeek.appleskin:appleskin-fabric:mc1.20-2.5.1:api"
 
+    // TOML設定ファイルの読み込みに使用
+    implementation "org.tomlj:tomlj:1.1.1"
+    shadowBundle "org.tomlj:tomlj:1.1.1"
+
     // Diet MOD連携（コンパイル時のみ、ソフト依存）
     modCompileOnly "curse.maven:diet-443570:4813902"
     modCompileOnly "curse.maven:spectrelib-993948:5217601"

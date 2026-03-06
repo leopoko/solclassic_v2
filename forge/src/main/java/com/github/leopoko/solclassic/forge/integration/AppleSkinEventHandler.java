@@ -35,6 +35,7 @@ public class AppleSkinEventHandler {
         }
 
         FoodProperties foodProperties = itemStack.getFoodProperties(player);
+        if (foodProperties == null) return;
 
         float multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
         int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
