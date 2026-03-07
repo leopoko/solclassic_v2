@@ -25,6 +25,8 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
         public final ModConfigSpec.BooleanValue enableWickerBasket;
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
+        // 新規ワールド検出用の内部フラグ
+        public final ModConfigSpec.BooleanValue configInitialized;
 
         public ServerConfig(ModConfigSpec.Builder builder) {
             builder.push("SolClassicSettings");
@@ -56,6 +58,10 @@ public class SolClassicConfigNeoForge {
             guaranteeMinimumNutrition = builder
                     .comment("Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.")
                     .define("guaranteeMinimumNutrition", false);
+
+            configInitialized = builder
+                    .comment("Internal flag: DO NOT MODIFY. Used to detect new world configs for applying global defaults.")
+                    .define("configInitialized", false);
 
             builder.pop();
         }
