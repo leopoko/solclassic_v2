@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.05+1.21.1] - 2026-03-08
+
+### Added
+- Added global default config system for modpack creators (`config/solclassic-defaults.toml`)
+- Added `/solclassic generatedefaults [force]` command to export current config as global defaults
+- Global defaults are applied to new worlds without requiring a restart
+
+---
+
+## [2.05+1.21.1] - 2026-03-08 (日本語)
+
+### 追加
+- modpack制作者向けグローバルデフォルト設定システムを追加 (`config/solclassic-defaults.toml`)
+- `/solclassic generatedefaults [force]` コマンドを追加（現在のコンフィグをグローバルデフォルトとして書き出し）
+- グローバルデフォルトは再起動なしで新規ワールドに反映される
+
+---
+
 ## [2.04+1.21.1] - 2026-03-07
 
 ### Added
