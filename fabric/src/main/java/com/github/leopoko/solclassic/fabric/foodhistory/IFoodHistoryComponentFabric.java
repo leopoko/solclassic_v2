@@ -1,7 +1,7 @@
 package com.github.leopoko.solclassic.fabric.foodhistory;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.LinkedList;

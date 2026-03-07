@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "solclassic:basket",
+    "id": "solclassic:basket",
     "count": 1
   }
 }

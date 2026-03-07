@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.container;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -21,7 +22,7 @@ public class FoodContainer extends SimpleContainer implements Container, Stacked
      * ※ 食料アイテムの場合、Item#isEdible() が true を返します。
      */
     private boolean isFood(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem().isEdible();
+        return !stack.isEmpty() && stack.has(DataComponents.FOOD);
     }
 
     /**

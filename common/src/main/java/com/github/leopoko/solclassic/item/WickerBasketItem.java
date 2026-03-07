@@ -4,12 +4,15 @@ import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.container.FoodChestMenu;
 import com.github.leopoko.solclassic.container.FoodContainer;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.ChestMenu;
@@ -17,9 +20,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -30,40 +33,20 @@ public class WickerBasketItem extends Item {
 
     /**
      * ダミーのFoodProperties。AppleSkinのFoodValuesEvent発火に必要。
-     * 実際の栄養値はAppleSkinEventHandlerで選択された食べ物の値に上書きされる。
      * nutritionとsaturationは0に設定し、NB/Dietが誤って栄養素を加算しないようにする。
      */
     private static final FoodProperties DUMMY_FOOD_PROPERTIES =
-            new FoodProperties.Builder().nutrition(0).saturationMod(0).build();
+            new FoodProperties.Builder().nutrition(0).saturationModifier(0f).build();
 
     public WickerBasketItem(Properties properties) {
         super(properties);
     }
 
     /**
-     * AppleSkinがFoodValuesEventを発火するために必要。
-     * WickerBasket自体はFoodPropertiesを持たないが（アイテム登録時に指定していない）、
-     * このオーバーライドによりisEdible()がtrueを返し、AppleSkinがツールチップを表示する。
-     */
-    @Override
-    public boolean isEdible() {
-        return true;
-    }
-
-    /**
-     * ダミーのFoodPropertiesを返す。AppleSkinのFoodValuesEvent発火に必要。
-     * 実際の栄養値はAppleSkinEventHandlerで選択された食べ物の値に上書きされる。
-     */
-    @Override
-    public @Nullable FoodProperties getFoodProperties() {
-        return DUMMY_FOOD_PROPERTIES;
-    }
-
-    /**
      * 食べるアニメーションの継続時間を返す。
      */
     @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 32; // バニラの通常食べ物と同じ
     }
 
@@ -77,26 +60,22 @@ public class WickerBasketItem extends Item {
     }
 
     @Override
-    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull net.minecraft.world.entity.LivingEntity entity) {
+    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
         if (entity instanceof Player player) {
-            // 食事履歴更新前に食べ物を確定する（eat()内のPlayerMixinが履歴を更新するため、
-            // 更新後に取得すると減衰計算の変化で異なる結果になる可能性がある）
+            HolderLookup.Provider registries = level.registryAccess();
+
+            // 食事履歴更新前に食べ物を確定する
             ItemStack food = getMostNutritiousFood(stack, player);
 
             if (!food.isEmpty()) {
                 // 食べ物のコピーを作成し、食べ物自身のfinishUsingItem()に処理を委譲する。
-                // これにより以下がすべて食べ物固有の実装で処理される:
-                //   - 栄養値の計算（PlayerMixin経由）
-                //   - 食事履歴の記録（PlayerMixin経由）
-                //   - ポーション効果の適用（LivingEntity.addEatEffect + SuspiciousStew等の固有処理）
-                //   - ボウル/瓶などの容器アイテム返却（finishUsingItemの戻り値）
                 ItemStack foodCopy = food.copy();
                 foodCopy.setCount(1);
                 ItemStack result = foodCopy.finishUsingItem(level, entity);
 
                 if (!level.isClientSide) {
                     // バスケットから食べ物を消費
-                    shrinkItemFromInventory(stack, food);
+                    shrinkItemFromInventory(stack, food, registries);
 
                     // 容器アイテムの返却（戻り値がボウルやガラス瓶の場合）
                     if (!result.isEmpty() && !result.is(food.getItem())) {
@@ -113,18 +92,20 @@ public class WickerBasketItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.wicker_basket.description1"));
         tooltip.add(Component.translatable("tooltip.wicker_basket.description2"));
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        HolderLookup.Provider registries = level.registryAccess();
+
         if (player.isCrouching()) {
             if (!level.isClientSide && player instanceof ServerPlayer) {
                 ItemStack stack = player.getItemInHand(hand);
 
-                FoodContainer chestInventory = createInventoryFromItemStack(stack);
+                FoodContainer chestInventory = createInventoryFromItemStack(stack, registries);
                 int slotIndex = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : -1;
                 // バニラのチェストUIを表示
                 player.openMenu(new SimpleMenuProvider(
@@ -133,7 +114,7 @@ public class WickerBasketItem extends Item {
                             public void removed(@NotNull Player playerIn) {
                                 super.removed(playerIn);
                                 // UI終了時に在庫情報をアイテムに保存する
-                                saveInventoryToItemStack(stack, chestInventory);
+                                saveInventoryToItemStack(stack, chestInventory, registries);
                             }
                         },
                         Component.translatable("container.wicker_basket")
@@ -143,12 +124,12 @@ public class WickerBasketItem extends Item {
         else
         {
             ItemStack stack = player.getItemInHand(hand);
-            CompoundTag tag = stack.getTag();
-            FoodContainer container = createInventoryFromItemStack(stack);
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            FoodContainer container = createInventoryFromItemStack(stack, registries);
             ListTag listTag = new ListTag();
-            if (tag != null && tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
+            if (tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
                 listTag = tag.getList(INVENTORY_TAG, Tag.TAG_COMPOUND);
-                container.fromTag(listTag);
+                container.fromTag(listTag, registries);
             }
 
             if (listTag.isEmpty() || !SolclassicConfigData.enableWickerBasket) {
@@ -162,65 +143,51 @@ public class WickerBasketItem extends Item {
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 
-    private static FoodContainer createInventoryFromItemStack(ItemStack stack) {
+    private static FoodContainer createInventoryFromItemStack(ItemStack stack, HolderLookup.Provider registries) {
         FoodContainer container = new FoodContainer(SLOT_COUNT);
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
             ListTag listTag = tag.getList(INVENTORY_TAG, Tag.TAG_COMPOUND);
-            container.fromTag(listTag);
+            container.fromTag(listTag, registries);
         }
         return container;
     }
 
-    private static void saveInventoryToItemStack(ItemStack stack, SimpleContainer container) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.put(INVENTORY_TAG, container.createTag());
-        stack.setTag(tag);
+    private static void saveInventoryToItemStack(ItemStack stack, SimpleContainer container, HolderLookup.Provider registries) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.put(INVENTORY_TAG, container.createTag(registries));
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
-    private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack) {
-        CompoundTag tag = wickerbasket.getTag();
-        FoodContainer container = createInventoryFromItemStack(wickerbasket);
-        ListTag listTag = new ListTag();
-        if (tag != null && tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
-            listTag = tag.getList(INVENTORY_TAG, Tag.TAG_COMPOUND);
-            container.fromTag(listTag);
-        }
-        boolean found = false;
+    private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack, HolderLookup.Provider registries) {
+        FoodContainer container = createInventoryFromItemStack(wickerbasket, registries);
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack itemStack = container.getItem(i);
             if (itemStack.getItem() == stack.getItem()) {
-                //container.removeItem(i, 1);
                 itemStack.shrink(1);
                 if (itemStack.isEmpty()) {
                     container.setItem(i, ItemStack.EMPTY);
                 }
-                found = true;
                 break;
             }
         }
-        saveInventoryToItemStack(wickerbasket, container);
+        saveInventoryToItemStack(wickerbasket, container, registries);
     }
 
     public static void shrinkMostNutritiousItemFromInventory(ItemStack wickerbasket, Player player) {
-        CompoundTag tag = wickerbasket.getTag();
-        FoodContainer container = createInventoryFromItemStack(wickerbasket);
-        ListTag listTag = new ListTag();
-        if (tag != null && tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
-            listTag = tag.getList(INVENTORY_TAG, Tag.TAG_COMPOUND);
-            container.fromTag(listTag);
-        }
+        HolderLookup.Provider registries = player.registryAccess();
         ItemStack mostNutritiousItemStack = getMostNutritiousFood(wickerbasket, player);
         if (!mostNutritiousItemStack.isEmpty()) {
-            shrinkItemFromInventory(wickerbasket, mostNutritiousItemStack);
+            shrinkItemFromInventory(wickerbasket, mostNutritiousItemStack, registries);
         }
     }
 
     public static ItemStack getMostNutritiousFood(ItemStack stack, Player player) {
         int mostNutrition = 0;
+        HolderLookup.Provider registries = player.registryAccess();
 
-        CompoundTag tag = stack.getTag();
-        FoodContainer container = createInventoryFromItemStack(stack);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        FoodContainer container = createInventoryFromItemStack(stack, registries);
         ListTag listTag = new ListTag();
 
         ItemStack mostNutritiousItemStack = ItemStack.EMPTY;
@@ -229,9 +196,9 @@ public class WickerBasketItem extends Item {
             return mostNutritiousItemStack;
         }
 
-        if (tag != null && tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
+        if (tag.contains(INVENTORY_TAG, Tag.TAG_LIST)) {
             listTag = tag.getList(INVENTORY_TAG, Tag.TAG_COMPOUND);
-            container.fromTag(listTag);
+            container.fromTag(listTag, registries);
         }
 
         if (listTag.isEmpty()) {
@@ -239,12 +206,13 @@ public class WickerBasketItem extends Item {
         }
 
         for(int i = 0; i < listTag.size(); ++i) {
-            ItemStack itemStack = ItemStack.of(listTag.getCompound(i));
+            ItemStack itemStack = ItemStack.parseOptional(registries, listTag.getCompound(i));
             if (!itemStack.isEmpty()) {
-                if (itemStack.getItem().getFoodProperties() == null) {
+                FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
+                if (foodProperties == null) {
                     continue;
                 }
-                int nutrition = itemStack.getItem().getFoodProperties().getNutrition();
+                int nutrition = foodProperties.nutrition();
                 float Multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
                 nutrition = FoodCalculator.CalculateNutrition(nutrition, Multiplier);
                 if (mostNutrition < nutrition) {

@@ -1,28 +1,32 @@
 package com.github.leopoko.solclassic.network;
 
-import dev.architectury.networking.NetworkChannel;
+import dev.architectury.networking.NetworkManager;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ModNetworking {
-    // チャンネル作成：ResourceLocation の第1引数は modid に置き換えてください
-    public static final NetworkChannel CHANNEL = NetworkChannel.create(new ResourceLocation("solclassic", "networking_channel"));
+    public static final ResourceLocation SYNC_FOOD_HISTORY =
+            ResourceLocation.fromNamespaceAndPath("solclassic", "sync_food_history");
 
     // メッセージの登録（Mod の初期化フェーズで呼び出す）
     public static void registerPackets() {
-        CHANNEL.register(SyncFoodHistoryPacket.class,
-                SyncFoodHistoryPacket::encode,
-                SyncFoodHistoryPacket::new,
-                SyncFoodHistoryPacket::apply);
+        // S2C レシーバー登録（ペイロードタイプも自動的に登録される）
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, SYNC_FOOD_HISTORY,
+                (buf, context) -> {
+                    SyncFoodHistoryPacket packet = new SyncFoodHistoryPacket(buf);
+                    context.queue(() -> {
+                        ClientPacketHandler.handleFoodHistoryPacket(packet.getFoodHistory());
+                    });
+                });
     }
 
     // サーバー -> クライアント送信用（プレイヤーに対して送信）
     public static void sendToPlayer(ServerPlayer player, SyncFoodHistoryPacket packet) {
-        CHANNEL.sendToPlayer(player, packet);
-    }
-
-    // クライアント -> サーバー送信用（必要なら）
-    public static void sendToServer(SyncFoodHistoryPacket packet) {
-        CHANNEL.sendToServer(packet);
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(
+                Unpooled.buffer(), player.registryAccess());
+        packet.encode(buf);
+        NetworkManager.sendToPlayer(player, SYNC_FOOD_HISTORY, buf);
     }
 }

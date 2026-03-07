@@ -1,5 +1,5 @@
 plugins {
-    id 'dev.architectury.loom' version '1.9-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id 'me.modmuss50.mod-publish-plugin' version '1.1.0'
@@ -20,16 +20,10 @@ subprojects {
     apply plugin: 'maven-publish'
 
     base {
-        // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
         archivesName = "$rootProject.archives_name-$project.name"
     }
 
     repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
         flatDir {
             dir 'libs'
         }
@@ -49,7 +43,6 @@ subprojects {
             }
         }
         maven {
-            // location of the maven that hosts JEI files since January 2023
             name = "Jared's maven"
             url = "https://maven.blamejared.com/"
         }
@@ -61,31 +54,29 @@ subprojects {
             name = 'Ladysnake Mods'
             url = 'https://maven.ladysnake.org/releases'
         }
+        maven {
+            name = "NeoForge"
+            url = "https://maven.neoforged.net/releases/"
+        }
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
         implementation "org.tomlj:tomlj:1.0.0"
-
-
     }
 
     java {
-        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-        // if it is present.
-        // If you remove this line, sources will not be generated.
         withSourcesJar()
 
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     tasks.withType(JavaCompile).configureEach {
-        it.options.release = 17
+        it.options.release = 21
     }
 
-    // Configure Maven publishing.
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -94,20 +85,8 @@ subprojects {
             }
         }
 
-        // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
         repositories {
-            // Add repositories to publish to here.
-            // Notice: This block does NOT have the same function as the block in the top level.
-            // The repositories here will be used for publishing your artifact, not for
-            // retrieving dependencies.
         }
-    }
-
-
-    tasks.withType(JavaExec).configureEach {
-        //systemProperty 'mixin.debug', 'true'
-        systemProperty 'mixin.env.remapRefMap', 'true'
-        systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
     }
 }
 
@@ -121,12 +100,10 @@ def extractLatestChangelog() {
     def found = false
 
     for (line in lines) {
-        // 最初の ## [x.xx] ヘッダーを見つけたら記録開始
         if (line.matches(/^## \[.*].*/) && !found) {
             found = true
             continue
         }
-        // 次の ## [x.xx] ヘッダーが来たら終了
         if (line.matches(/^## \[.*].*/) && found) {
             break
         }
@@ -149,8 +126,8 @@ publishMods {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = project.curseforge_project_id
         projectSlug = "foodvariations"
-        minecraftVersions.add("1.20.1")
-        javaVersions.add(JavaVersion.VERSION_17)
+        minecraftVersions.add("1.21.1")
+        javaVersions.add(JavaVersion.VERSION_21)
         requires("architectury-api")
     }
 
@@ -158,7 +135,7 @@ publishMods {
     def mrOptions = modrinthOptions {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = project.modrinth_project_id
-        minecraftVersions.add("1.20.1")
+        minecraftVersions.add("1.21.1")
         requires("architectury-api")
     }
 
@@ -178,17 +155,17 @@ publishMods {
         requires("fabric-api")
     }
 
-    // Forge版
-    curseforge("curseforgeForge") {
+    // NeoForge版
+    curseforge("curseforgeNeoForge") {
         from cfOptions
-        file = project(":forge").remapJar.archiveFile
-        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (Forge)"
-        modLoaders.add("forge")
+        file = project(":neoforge").remapJar.archiveFile
+        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (NeoForge)"
+        modLoaders.add("neoforge")
     }
-    modrinth("modrinthForge") {
+    modrinth("modrinthNeoForge") {
         from mrOptions
-        file = project(":forge").remapJar.archiveFile
-        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (Forge)"
-        modLoaders.add("forge")
+        file = project(":neoforge").remapJar.archiveFile
+        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (NeoForge)"
+        modLoaders.add("neoforge")
     }
 }

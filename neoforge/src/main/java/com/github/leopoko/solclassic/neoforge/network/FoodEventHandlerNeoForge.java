@@ -1,6 +1,5 @@
-package com.github.leopoko.solclassic.fabric.network;
+package com.github.leopoko.solclassic.neoforge.network;
 
-import com.github.leopoko.solclassic.fabric.foodhistory.IFoodHistoryComponentFabric;
 import com.github.leopoko.solclassic.network.IFoodEventHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -8,9 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
-import static com.github.leopoko.solclassic.fabric.foodhistory.FoodHistoryComponentImplFabric.FOOD_HISTORY;
-
-public class FoodEventHandlerFabric  implements IFoodEventHandler {
+public class FoodEventHandlerNeoForge implements IFoodEventHandler {
     // プレイヤーごとの食事履歴を保存するマップ（キーはプレイヤーのUUID）
     private static final Map<UUID, LinkedList<ItemStack>> foodHistories = new WeakHashMap<>();
 
@@ -21,8 +18,7 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @return 食事履歴の LinkedList (存在しない場合は新規作成)
      */
     public LinkedList<ItemStack> getFoodHistory(ServerPlayer player) {
-        LinkedList<ItemStack> history_ = FOOD_HISTORY.get(player).getHistory();
-        return history_;
+        return foodHistories.computeIfAbsent(player.getUUID(), uuid -> new LinkedList<>());
     }
 
     /**
@@ -38,7 +34,6 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
         if (history.size() > maxHistory) {
             history.removeFirst();
         }
-        FOOD_HISTORY.get(player).setFood(history);
     }
 
     /**
@@ -49,12 +44,10 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      */
     public void setFoodHistory(Player player, LinkedList<ItemStack> foodHistory) {
         foodHistories.put(player.getUUID(), foodHistory);
-        FOOD_HISTORY.get(player).setFood(foodHistory);
     }
 
     public void resetFoodHistory(Player player) {
         foodHistories.remove(player.getUUID());
-        FOOD_HISTORY.get(player).setFood(new LinkedList<>());
     }
 
     /**
@@ -65,7 +58,7 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @return 食事履歴内に記録されている、対象アイテムの個数
      */
     public int countFoodEaten(Player player, ItemStack target) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
+        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
         if (history == null) {
             return 0;
         }
@@ -89,7 +82,7 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @return 直近 n 件中に対象アイテムが出現した回数
      */
     public int countFoodEatenRecent(Player player, ItemStack target, int n) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
+        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
         if (history == null || history.isEmpty()) {
             return 0;
         }
@@ -107,7 +100,7 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
 
     @Override
     public LinkedList<ItemStack> getClientFoodHistory(Player player) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
+        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
         return history != null ? history : new LinkedList<>();
     }
 }

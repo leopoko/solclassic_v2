@@ -1,4 +1,4 @@
-package com.github.leopoko.solclassic.fabric.mixin;
+package com.github.leopoko.solclassic.neoforge.mixin;
 
 import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
@@ -21,8 +21,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Player.class)
-public class PlayerMixinFabric {
+@Mixin(value = Player.class, priority = 1100)
+public class PlayerMixinNeoForge {
 
     @Unique
     private ItemStack solclassic$eatingStack = ItemStack.EMPTY;
@@ -36,8 +36,7 @@ public class PlayerMixinFabric {
             method = "eat",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/food/FoodData;eat(Lnet/minecraft/world/food/FoodProperties;)V"),
-            remap = true
+                    target = "Lnet/minecraft/world/food/FoodData;eat(Lnet/minecraft/world/food/FoodProperties;)V")
     )
     private void modifyFoodRestoration(FoodData instance, FoodProperties originalProps) {
         Player player = (Player) (Object) this;
@@ -45,14 +44,16 @@ public class PlayerMixinFabric {
 
         String itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
 
+        boolean isWickerBasket = false;
         if (itemId.equals("solclassic:wicker_basket")) {
+            isWickerBasket = true;
             WickerBasketItem wickerBasketItem = (WickerBasketItem) itemStack.getItem();
             itemStack = wickerBasketItem.getMostNutritiousFood(itemStack, player);
             itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
         } else {
             ItemStack useItem = player.getUseItem();
             if (!useItem.isEmpty() && useItem.getItem() instanceof WickerBasketItem) {
-                // 委譲方式: itemStackは既に実際の食べ物
+                isWickerBasket = true;
             }
         }
 

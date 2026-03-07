@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.container;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -15,7 +16,7 @@ public class FoodSlot extends Slot {
     @Override
     public boolean mayPlace(ItemStack stack) {
         // スタックが食料かどうかをチェック
-        boolean isEdible = stack.getItem().isEdible();
+        boolean isEdible = stack.has(DataComponents.FOOD);
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
 
 

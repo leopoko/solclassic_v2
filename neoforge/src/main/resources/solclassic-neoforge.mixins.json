@@ -1,13 +1,13 @@
 {
   "required": true,
-  "package": "com.github.leopoko.solclassic.fabric.mixin",
+  "package": "com.github.leopoko.solclassic.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "priority": 1100,
   "client": [
   ],
   "mixins": [
-    "PlayerMixinFabric"
+    "PlayerMixinNeoForge"
   ],
   "injectors": {
     "defaultRequire": 1

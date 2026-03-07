@@ -23,7 +23,7 @@ import java.util.*;
 public class FoodHistoryBookScreen extends Screen {
 
     // バニラの本テクスチャ
-    private static final ResourceLocation BOOK_LOCATION = new ResourceLocation("textures/gui/book.png");
+    private static final ResourceLocation BOOK_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/book.png");
     // テクスチャサイズ
     private static final int BOOK_WIDTH = 146;
     private static final int BOOK_HEIGHT = 180;
@@ -126,8 +126,13 @@ public class FoodHistoryBookScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // 1.21.1のデフォルトrenderBackgroundはブラーをかけるためオーバーライドして無効化
+        // 本のテクスチャ自体が背景となる
+    }
+
+    @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
 
         int bookLeft = (this.width - BOOK_WIDTH) / 2;
         int bookTop = (this.height - BOOK_HEIGHT) / 2;

@@ -3,16 +3,15 @@ architectury {
 }
 
 configurations {
-    // Forge 用に再難読化などの変換処理で利用される構成を定義
-    transformProductionForge {
-        canBeConsumed = true   // 他プロジェクト（Forge モジュール）がこの構成を消費できる
-        canBeResolved = false  // 解決（依存関係の解決）は行わない（公開専用）
+    // NeoForge 用に再難読化などの変換処理で利用される構成を定義
+    transformProductionNeoForge {
+        canBeConsumed = true
+        canBeResolved = false
     }
 }
 
 artifacts {
-    // transformProductionForge 構成として、JAR を公開する
-    add("transformProductionForge", jar)
+    add("transformProductionNeoForge", jar)
 }
 
 dependencies {
