@@ -30,6 +30,9 @@ dependencies {
     // AppleSkin連携（コンパイル時のみ、ランタイムではオプション）
     modCompileOnly "squeek.appleskin:appleskin-neoforge:mc1.21-3.0.5:api"
 
+    // Nutritional Balance連携（コンパイル時のみ、ソフト依存）
+    modCompileOnly "curse.maven:nutritional-balance-448222:7664401"
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle(project(path: ':common', configuration: 'transformProductionNeoForge'))
 }

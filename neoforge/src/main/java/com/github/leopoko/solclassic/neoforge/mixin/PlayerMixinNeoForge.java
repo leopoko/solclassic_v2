@@ -6,6 +6,7 @@ import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.FoodHistorySync;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import com.github.leopoko.solclassic.utils.FoodDecayTracker;
+import com.github.leopoko.solclassic.neoforge.integration.ModCompatHelperNeoForge;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -97,6 +98,12 @@ public class PlayerMixinNeoForge {
         if (player instanceof ServerPlayer serverPlayer) {
             FoodHistoryHolder.INSTANCE.addFoodHistory(serverPlayer, foodToRecord, SolclassicConfigData.maxFoodHistorySize);
             FoodHistorySync.syncFoodHistory(serverPlayer);
+
+            // WickerBasketから食べた場合、実際の食べ物アイテムでイベントを発火し
+            // Nutritional Balance等の食事イベント監視MODに通知する
+            if (isWickerBasket) {
+                ModCompatHelperNeoForge.notifyFoodConsumedFromBasket(serverPlayer, foodToRecord);
+            }
         }
     }
 }

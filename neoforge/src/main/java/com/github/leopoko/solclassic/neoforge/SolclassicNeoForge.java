@@ -4,6 +4,8 @@ import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.neoforge.config.SolClassicConfigNeoForge;
 import com.github.leopoko.solclassic.neoforge.config.SolClassicConfigInitNeoForge;
 import com.github.leopoko.solclassic.neoforge.integration.AppleSkinEventHandler;
+import com.github.leopoko.solclassic.neoforge.integration.NutritionalBalanceIntegrationNeoForge;
+import com.github.leopoko.solclassic.neoforge.integration.NutritionalBalanceTooltipHandlerNeoForge;
 import com.github.leopoko.solclassic.neoforge.network.FoodEventHandlerNeoForge;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.ModNetworking;
@@ -26,6 +28,12 @@ public final class SolclassicNeoForge {
         ModNetworking.registerPackets();
 
         FoodHistoryHolder.INSTANCE = new FoodEventHandlerNeoForge();
+
+        // Nutritional Balance連携：インストールされている場合のみイベントハンドラを登録
+        // サーバー側の栄養素計算に使用するため、コンストラクタ（共通初期化）で登録する
+        if (ModList.get().isLoaded("nutritionalbalance")) {
+            NutritionalBalanceIntegrationNeoForge.register();
+        }
 
         Solclassic.init();
     }
@@ -50,6 +58,10 @@ public final class SolclassicNeoForge {
         // AppleSkin連携：インストールされている場合のみイベントハンドラを登録
         if (ModList.get().isLoaded("appleskin")) {
             NeoForge.EVENT_BUS.register(new AppleSkinEventHandler());
+        }
+        // Nutritional Balance ツールチップ連携（クライアント側）
+        if (ModList.get().isLoaded("nutritionalbalance")) {
+            NutritionalBalanceTooltipHandlerNeoForge.register();
         }
     }
 }

@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.04+1.21.1] - 2026-03-07
+
+### Added
+- Ported to Minecraft 1.21.1 (Fabric + NeoForge)
+- NeoForge platform support (replacing Forge)
+- Nutritional Balance mod integration for NeoForge 1.21.1
+
+### Changed
+- Migrated from Forge to NeoForge (net.minecraftforge → net.neoforged)
+- Updated to Architectury API 13.0.8
+- Updated to Fabric API 0.116.8+1.21.1
+- Updated to Cardinal Components API 6.1.3
+- Updated to Java 21
+- Migrated NBT data storage to Data Components API (CUSTOM_DATA)
+- Migrated Food API (FoodProperties record accessors, DataComponents.FOOD)
+- Migrated ItemStack serialization to codec-based format
+- Updated Mixin targets for 1.21.1 method signatures
+
+---
+
+## [2.04+1.21.1] - 2026-03-07 (日本語)
+
+### 追加
+- Minecraft 1.21.1に対応 (Fabric + NeoForge)
+- NeoForgeプラットフォーム対応 (Forgeから移行)
+- NeoForge 1.21.1向けNutritional Balance MOD連携
+
+### 変更
+- ForgeからNeoForgeに移行 (net.minecraftforge → net.neoforged)
+- Architectury API 13.0.8に更新
+- Fabric API 0.116.8+1.21.1に更新
+- Cardinal Components API 6.1.3に更新
+- Java 21に更新
+- NBTデータ保存をData Components API (CUSTOM_DATA) に移行
+- Food API移行 (FoodProperties recordアクセサ、DataComponents.FOOD)
+- ItemStackシリアライゼーションをcodecベース形式に移行
+- 1.21.1のメソッドシグネチャに合わせてMixinターゲットを更新
+
+---
+
 ## [2.04] - 2026-03-06
 
 ### Fixed
