@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic;
 
+import com.github.leopoko.solclassic.commands.GenerateDefaultsCommand;
 import com.github.leopoko.solclassic.commands.ResetFoodHistoryCommand;
 import com.github.leopoko.solclassic.item.BasketItem;
 import com.github.leopoko.solclassic.item.FoodHistoryBookItem;
@@ -47,6 +48,7 @@ public final class Solclassic {
                                                  CommandBuildContext context,
                                                  Commands.CommandSelection selection) -> {
             ResetFoodHistoryCommand.register(dispatcher);
+            GenerateDefaultsCommand.register(dispatcher);
         });
 
         if (Platform.getEnvironment() == Env.CLIENT) {
