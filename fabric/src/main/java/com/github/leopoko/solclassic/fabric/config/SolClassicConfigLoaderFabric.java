@@ -1,7 +1,9 @@
 package com.github.leopoko.solclassic.fabric.config;
 
 import com.github.leopoko.solclassic.config.SolclassicConfigData;
+import com.github.leopoko.solclassic.config.SolclassicGlobalDefaults;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
@@ -19,27 +21,6 @@ import java.util.stream.Collectors;
 public class SolClassicConfigLoaderFabric {
 
     public static final String CONFIG_FILE_NAME = "solclassic-server.toml";
-
-    // デフォルト設定の内容（TOML形式）
-    private static final String DEFAULT_CONFIG_CONTENT =
-            "[SolClassicSettings]\n" +
-                    "#Maximum number of food history entries to track\n" +
-                    "#Range: 5 ~ 300\n" +
-                    "maxFoodHistorySize = 100\n" +
-                    "#Maximum number of food short history entries to track\n" +
-                    "#Range: 1 ~ 100\n" +
-                    "maxShortFoodHistorySize = 5\n" +
-                    "#Long decay modifiers for food recovery\n" +
-                    "#Range: 0.0 ~ 1.0\n" +
-                    "longFoodDecayModifiers = 0.01\n" +
-                    "#List of decay modifiers for food recovery, applied sequentially\n" +
-                    "shortFoodDecayModifiers = [1.0, 0.9, 0.75, 0.5, 0.05]\n"+
-                    "#List of food items that should not be tracked\n" +
-                    "foodBlacklist = [\"minecraft:dried_kelp\"]\n" +
-                    "#Enable Wicker Basket\n" +
-                    "enableWickerBasket = true\n" +
-                    "#Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.\n" +
-                    "guaranteeMinimumNutrition = false";
 
     /**
      * サーバー（ワールド）起動時に呼ばれる処理です。
@@ -131,7 +112,11 @@ public class SolClassicConfigLoaderFabric {
     }
 
     private static void recreateDefaultConfig(MinecraftServer server, Path configFile) throws IOException {
-        Files.writeString(configFile, DEFAULT_CONFIG_CONTENT, StandardCharsets.UTF_8);
+        // グローバルデフォルト設定を読み込み、その値でサーバーコンフィグを生成
+        SolclassicGlobalDefaults defaults = SolclassicGlobalDefaults.load(
+                FabricLoader.getInstance().getConfigDir());
+        String content = SolclassicGlobalDefaults.generateConfigContent(defaults);
+        Files.writeString(configFile, content, StandardCharsets.UTF_8);
         server.sendSystemMessage(Component.literal("Default config recreated at: " + configFile));
     }
 }
