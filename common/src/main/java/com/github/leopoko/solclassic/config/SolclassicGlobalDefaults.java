@@ -182,21 +182,22 @@ public class SolclassicGlobalDefaults {
         // 現在のサーバーコンフィグ値をコピー
         defaults.maxFoodHistorySize = SolclassicConfigData.maxFoodHistorySize;
         defaults.maxShortFoodHistorySize = SolclassicConfigData.maxShortFoodHistorySize;
-        defaults.longFoodDecayModifiers = SolclassicConfigData.longFoodDecayModifiers;
-        // float -> double 変換
+        // float -> double 変換時の精度劣化を防ぐため、Float.toString()経由で変換する
+        // 直接キャストすると 0.01F → 0.009999999776482582 のようになる
+        defaults.longFoodDecayModifiers = Double.parseDouble(Float.toString(SolclassicConfigData.longFoodDecayModifiers));
         defaults.shortFoodDecayModifiers = new ArrayList<>();
         for (Float f : SolclassicConfigData.shortFoodDecayModifiers) {
-            defaults.shortFoodDecayModifiers.add((double) f);
+            defaults.shortFoodDecayModifiers.add(Double.parseDouble(Float.toString(f)));
         }
         defaults.foodBlacklist = new ArrayList<>(SolclassicConfigData.foodBlacklist);
         defaults.enableWickerBasket = SolclassicConfigData.enableWickerBasket;
         defaults.guaranteeMinimumNutrition = SolclassicConfigData.guaranteeMinimumNutrition;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("# Spice of Life: Classic Edition - グローバルデフォルト設定\n");
-        sb.append("# このファイルは新規ワールド作成時のサーバーコンフィグのデフォルト値を定義します。\n");
-        sb.append("# 既存ワールドのコンフィグには影響しません。\n");
-        sb.append("# 不要な項目は削除できます（指定されていない項目はハードコードデフォルト値が使用されます）。\n");
+        sb.append("# Spice of Life: Classic Edition - Global Default Settings\n");
+        sb.append("# This file defines default values for server config when creating new worlds.\n");
+        sb.append("# It does NOT affect existing world configs.\n");
+        sb.append("# You can remove any entry you don't need (missing entries will fall back to hardcoded defaults).\n");
         sb.append("\n");
         sb.append(generateConfigContent(defaults));
 

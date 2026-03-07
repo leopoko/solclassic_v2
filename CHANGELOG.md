@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.05] - 2026-03-07
+
+### Added
+- Added global default config system for modpack creators. Place `config/solclassic-defaults.toml` to customize default values for new world server configs. Existing world configs are not affected.
+- Added `/solclassic generatedefaults` command to export current server config values as a global defaults file. Use `/solclassic generatedefaults force` to overwrite an existing file.
+
+---
+
+## [2.05] - 2026-03-07 (日本語)
+
+### 追加
+- modpack制作者向けのグローバルデフォルトコンフィグ機能を追加。`config/solclassic-defaults.toml` を配置することで、新規ワールド作成時のサーバーコンフィグのデフォルト値をカスタマイズ可能。既存ワールドのコンフィグには影響しない。
+- `/solclassic generatedefaults` コマンドを追加。現在のサーバーコンフィグ値をグローバルデフォルトファイルとして書き出す。`/solclassic generatedefaults force` で既存ファイルを上書き可能。
+
+---
+
 ## [2.04] - 2026-03-06
 
 ### Fixed
