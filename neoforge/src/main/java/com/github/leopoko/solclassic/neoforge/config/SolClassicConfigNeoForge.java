@@ -25,10 +25,20 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
         public final ModConfigSpec.BooleanValue enableWickerBasket;
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
-        // 新規ワールド検出用の内部フラグ
-        public final ModConfigSpec.BooleanValue configInitialized;
 
         public ServerConfig(ModConfigSpec.Builder builder) {
+            // NeoForge 1.21.1 ではSERVERコンフィグは config/ ディレクトリにグローバルに保存されます。
+            // このファイルは全ワールドで共有されます。
+            // ワールドごとに異なる設定を使いたい場合は、このファイルを
+            // saves/<ワールド名>/serverconfig/ にコピーして編集してください。
+            builder.comment(
+                    "Spice of Life: Classic Edition - Server Configuration",
+                    "",
+                    "NeoForge stores this config globally in the config/ directory.",
+                    "This file is shared across all worlds.",
+                    "To use different settings per world, copy this file to",
+                    "saves/<world_name>/serverconfig/ and edit it there."
+            );
             builder.push("SolClassicSettings");
             maxFoodHistorySize = builder
                     .comment("Maximum number of food history entries to track")
@@ -58,10 +68,6 @@ public class SolClassicConfigNeoForge {
             guaranteeMinimumNutrition = builder
                     .comment("Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.")
                     .define("guaranteeMinimumNutrition", false);
-
-            configInitialized = builder
-                    .comment("Internal flag: DO NOT MODIFY. Used to detect new world configs for applying global defaults.")
-                    .define("configInitialized", false);
 
             builder.pop();
         }
