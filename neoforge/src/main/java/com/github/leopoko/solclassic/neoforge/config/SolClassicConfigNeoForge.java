@@ -27,6 +27,18 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
 
         public ServerConfig(ModConfigSpec.Builder builder) {
+            // NeoForge 1.21.1 ではSERVERコンフィグは config/ ディレクトリにグローバルに保存されます。
+            // このファイルは全ワールドで共有されます。
+            // ワールドごとに異なる設定を使いたい場合は、このファイルを
+            // saves/<ワールド名>/serverconfig/ にコピーして編集してください。
+            builder.comment(
+                    "Spice of Life: Classic Edition - Server Configuration",
+                    "",
+                    "NeoForge stores this config globally in the config/ directory.",
+                    "This file is shared across all worlds.",
+                    "To use different settings per world, copy this file to",
+                    "saves/<world_name>/serverconfig/ and edit it there."
+            );
             builder.push("SolClassicSettings");
             maxFoodHistorySize = builder
                     .comment("Maximum number of food history entries to track")

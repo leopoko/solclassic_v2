@@ -39,8 +39,9 @@ public final class SolclassicNeoForge {
     }
 
     /**
-     * サーバー設定がロードまたはクライアントに同期された際に、
-     * 共通設定データ（SolclassicConfigData）を更新する。
+     * サーバー設定がロードされた際に、共通設定データ（SolclassicConfigData）を更新する。
+     * NeoForge 1.21.1 ではSERVERコンフィグは config/ にグローバルに保存されるため、
+     * ワールドごとのデフォルト適用は行わない。
      */
     private void onConfigLoading(final ModConfigEvent.Loading event) {
         if (event.getConfig().getSpec() == SolClassicConfigNeoForge.SERVER_CONFIG) {
