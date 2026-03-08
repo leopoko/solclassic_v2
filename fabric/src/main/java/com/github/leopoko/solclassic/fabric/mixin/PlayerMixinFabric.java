@@ -6,7 +6,6 @@ import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.FoodHistorySync;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import com.github.leopoko.solclassic.utils.FoodDecayTracker;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -58,38 +57,41 @@ public class PlayerMixinFabric {
 
         for (String itemID_ : SolclassicConfigData.foodBlacklist) {
             if (itemId.equals(itemID_)) {
-                FoodProperties foodProperties_ = itemStack.get(DataComponents.FOOD);
-                if (foodProperties_ == null) {
+                // ブラックリスト食品: 減衰なしで栄養値をそのまま適用（Quality Food等の品質修正は反映）
+                int nutrition_ = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(itemStack, player);
+                float saturationModifier_ = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(itemStack, player);
+                if (nutrition_ == 0 && saturationModifier_ == 0f) {
                     instance.eat(originalProps);
                     return;
                 }
-                instance.eat(foodProperties_);
+                FoodProperties blacklistProps = new FoodProperties.Builder()
+                        .nutrition(nutrition_)
+                        .saturationModifier(saturationModifier_)
+                        .build();
+                instance.eat(blacklistProps);
                 return;
             }
         }
 
-        FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
-        if (foodProperties == null) {
-            foodProperties = originalProps;
+        // Quality Food等のMODによる品質修正を反映した栄養値を取得
+        int baseNutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(itemStack, player);
+        float baseSaturationModifier = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(itemStack, player);
+        if (baseNutrition == 0 && baseSaturationModifier == 0f) {
+            instance.eat(originalProps);
+            return;
         }
 
         ItemStack foodToRecord = itemStack.isEmpty() ? new ItemStack(itemStack.getItem()) : itemStack;
 
         float multiplier = FoodCalculator.CalculateMultiplier(foodToRecord, player);
-        int nutrition = FoodCalculator.CalculateNutrition(foodProperties.nutrition(), multiplier);
+        int nutrition = FoodCalculator.CalculateNutrition(baseNutrition, multiplier);
 
         FoodDecayTracker.recordDecay(player, itemStack, multiplier);
-
-        // foodProperties.saturation() は絶対値 (nutrition * modifier * 2.0f) なので
-        // 元の saturation modifier を逆算する
-        float saturationModifier = (foodProperties.nutrition() > 0)
-                ? foodProperties.saturation() / ((float) foodProperties.nutrition() * 2.0f)
-                : 0f;
 
         // 減衰後のnutritionで新しいFoodPropertiesを作成してeat()に渡す
         FoodProperties modifiedProps = new FoodProperties.Builder()
                 .nutrition(nutrition)
-                .saturationModifier(saturationModifier)
+                .saturationModifier(baseSaturationModifier)
                 .build();
         instance.eat(modifiedProps);
 

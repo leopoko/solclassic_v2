@@ -2,6 +2,7 @@ package com.github.leopoko.solclassic.fabric.integration;
 
 import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
+import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,9 +60,14 @@ public class AppleSkinEventHandlerFabric {
 
             // バスケット内の食べ物のFoodPropertiesをdefaultとして設定
             // （WickerBasket自体のダミーFoodProperties 0/0 を上書き）
-            FoodProperties innerFoodProperties = itemStack.get(DataComponents.FOOD);
-            if (innerFoodProperties != null) {
-                event.defaultFoodComponent = innerFoodProperties;
+            // Quality Food等のMODによる品質修正を反映した値を使用
+            int innerNutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(itemStack, player);
+            float innerSatMod = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(itemStack, player);
+            if (innerNutrition > 0) {
+                event.defaultFoodComponent = new FoodProperties.Builder()
+                        .nutrition(innerNutrition)
+                        .saturationModifier(innerSatMod)
+                        .build();
             }
         }
 
@@ -73,26 +79,21 @@ public class AppleSkinEventHandlerFabric {
             }
         }
 
-        // 食べ物のFoodPropertiesを取得
-        FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
-        if (foodProperties == null) {
+        // Quality Food等のMODによる品質修正を反映した栄養値を取得
+        int baseNutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(itemStack, player);
+        float baseSaturationModifier = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(itemStack, player);
+        if (baseNutrition == 0) {
             return;
         }
 
         // 減衰倍率を計算
         float multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
-        int nutrition = FoodCalculator.CalculateNutrition(foodProperties.nutrition(), multiplier);
-
-        // foodProperties.saturation() は絶対値 (nutrition * modifier * 2.0f) なので
-        // 元の saturation modifier を逆算する
-        float saturationModifier = (foodProperties.nutrition() > 0)
-                ? foodProperties.saturation() / ((float) foodProperties.nutrition() * 2.0f)
-                : 0f;
+        int nutrition = FoodCalculator.CalculateNutrition(baseNutrition, multiplier);
 
         // 減衰後のFoodPropertiesを作成してAppleSkinに渡す
         FoodProperties modifiedProps = new FoodProperties.Builder()
                 .nutrition(nutrition)
-                .saturationModifier(saturationModifier)
+                .saturationModifier(baseSaturationModifier)
                 .build();
         event.modifiedFoodComponent = modifiedProps;
     }
