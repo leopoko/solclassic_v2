@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.06+1.21.1] - 2026-03-08
+
+### Added
+- Added compatibility with Quality Food mod. SoL Classic's food decay now correctly applies to quality-modified nutrition values instead of base values. Food history treats items of different quality as the same food.
+
+---
+
+## [2.06+1.21.1] - 2026-03-08 (日本語)
+
+### 追加
+- Quality Food MODとの互換性を追加。SoL Classicの食事減衰が、品質による栄養値変更を正しく反映するよう修正。食事履歴上では品質の異なる同じ食べ物は同一として扱う。
+
+---
+
 ## [2.05+1.21.1] - 2026-03-08
 
 ### Added (Fabric)

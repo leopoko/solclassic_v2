@@ -143,14 +143,14 @@ publishMods {
     curseforge("curseforgeFabric") {
         from cfOptions
         file = project(":fabric").remapJar.archiveFile
-        displayName = "Spice_of_Life:Classic_Edition_v${project.mod_version} (Fabric)"
+        displayName = "SoL:Classic_v${project.mod_version} (Fabric)"
         modLoaders.add("fabric")
         requires("fabric-api")
     }
     modrinth("modrinthFabric") {
         from mrOptions
         file = project(":fabric").remapJar.archiveFile
-        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (Fabric)"
+        displayName = "SoL:Classic_v${project.mod_version} (Fabric)"
         modLoaders.add("fabric")
         requires("fabric-api")
     }
@@ -159,13 +159,13 @@ publishMods {
     curseforge("curseforgeNeoForge") {
         from cfOptions
         file = project(":neoforge").remapJar.archiveFile
-        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (NeoForge)"
+        displayName = "SoL:Classic_v${project.mod_version} (NeoForge)"
         modLoaders.add("neoforge")
     }
     modrinth("modrinthNeoForge") {
         from mrOptions
         file = project(":neoforge").remapJar.archiveFile
-        displayName = "Spice_of_Life:_Classic_Edition_v${project.mod_version} (NeoForge)"
+        displayName = "SoL:Classic_v${project.mod_version} (NeoForge)"
         modLoaders.add("neoforge")
     }
 }

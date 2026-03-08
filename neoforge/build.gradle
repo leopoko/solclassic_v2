@@ -33,8 +33,14 @@ dependencies {
     // Nutritional Balance連携（コンパイル時のみ、ソフト依存）
     modCompileOnly "curse.maven:nutritional-balance-448222:7664401"
 
+    // Quality Food MOD連携（コンパイル時のみ、ソフト依存）
+    modCompileOnly "curse.maven:quality-food-973932:7653821"
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle(project(path: ':common', configuration: 'transformProductionNeoForge'))
+
+    runtimeOnly "curse.maven:quality-food-973932:7653821"
+    runtimeOnly "curse.maven:appleskin-248787:7517379"
 }
 
 processResources {

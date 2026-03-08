@@ -1,9 +1,12 @@
 package com.github.leopoko.solclassic.network;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -70,4 +73,38 @@ public interface IFoodEventHandler {
      * @return 食事履歴の LinkedList（存在しない場合は空リスト）
      */
     public LinkedList<ItemStack> getClientFoodHistory(Player player);
+
+    /**
+     * ItemStackから実効的な栄養値を取得します。
+     * Quality Food等のMODがアイテムの品質に応じて栄養値を変更している場合、
+     * その変更後の値を返します。
+     * デフォルト実装ではベースの栄養値を返します。
+     *
+     * @param stack  対象のItemStack
+     * @param player 対象のプレイヤー（null可）
+     * @return 実効的な栄養値（食べ物でない場合は0）
+     */
+    default int getEffectiveNutrition(ItemStack stack, @Nullable Player player) {
+        FoodProperties fp = stack.get(DataComponents.FOOD);
+        return fp != null ? fp.nutrition() : 0;
+    }
+
+    /**
+     * ItemStackから実効的な満腹度修正値を取得します。
+     * Quality Food等のMODがアイテムの品質に応じて満腹度修正値を変更している場合、
+     * その変更後の値を返します。
+     * デフォルト実装ではベースの満腹度修正値を返します。
+     *
+     * @param stack  対象のItemStack
+     * @param player 対象のプレイヤー（null可）
+     * @return 実効的な満腹度修正値（食べ物でない場合は0）
+     */
+    default float getEffectiveSaturationModifier(ItemStack stack, @Nullable Player player) {
+        FoodProperties fp = stack.get(DataComponents.FOOD);
+        if (fp == null) return 0f;
+        // saturation() は絶対値 (nutrition * modifier * 2.0f) なので modifier を逆算
+        return (fp.nutrition() > 0)
+                ? fp.saturation() / ((float) fp.nutrition() * 2.0f)
+                : 0f;
+    }
 }
