@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,9 +57,11 @@ public class PlayerMixinForge {
 
         for (String itemID_ : SolClassicConfigForge.CONFIG.foodBlacklist.get()) {
             if (itemId.equals(itemID_)) {
-                FoodProperties foodProperties_ = entity.getItem().getFoodProperties();
-                if (foodProperties_ == null) return;
-                instance.eat(foodProperties_.getNutrition(), foodProperties_.getSaturationModifier());
+                // ブラックリスト食品: 減衰なしで栄養値をそのまま適用（Quality Food等の品質修正は反映）
+                int nutrition_ = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(entity, player);
+                float saturation_ = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(entity, player);
+                if (nutrition_ == 0 && saturation_ == 0f) return;
+                instance.eat(nutrition_, saturation_);
                 return;
             }
         }
@@ -68,19 +69,21 @@ public class PlayerMixinForge {
         // shrink(1)が先に実行されるため、スタック数1の場合countが0になる。
         // getItem()はcount=0でも正しいアイテムを返すので、isEdible()で判定する。
         if (entity.getItem().isEdible()) {
-            FoodProperties foodProperties = entity.getItem().getFoodProperties();
-            if (foodProperties == null) return;
+            // Quality Food等のMODによる品質修正を反映した栄養値を取得
+            int baseNutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(entity, player);
+            float baseSaturation = FoodHistoryHolder.INSTANCE.getEffectiveSaturationModifier(entity, player);
+            if (baseNutrition == 0 && baseSaturation == 0f) return;
 
             // count=0のItemStackでも正しく比較できるが、履歴保存用にcount>=1のスタックを用意する
             ItemStack foodToRecord = entity.isEmpty() ? new ItemStack(entity.getItem()) : entity;
 
             float multiplier = FoodCalculator.CalculateMultiplier(foodToRecord, player);
-            int nutrition = FoodCalculator.CalculateNutrition(foodProperties.getNutrition(), multiplier);
+            int nutrition = FoodCalculator.CalculateNutrition(baseNutrition, multiplier);
 
             // Diet MOD連携: 減衰倍率と実際の食べ物を保存（Dietのイベントハンドラで使用）
             FoodDecayTracker.recordDecay(player, entity, multiplier);
 
-            instance.eat(nutrition, foodProperties.getSaturationModifier());
+            instance.eat(nutrition, baseSaturation);
 
             if (player instanceof net.minecraft.server.level.ServerPlayer) {
                 // サーバー側で食事履歴を更新

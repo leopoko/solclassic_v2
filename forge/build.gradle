@@ -59,6 +59,9 @@ dependencies {
     // Nutritional Balance MOD連携（コンパイル時のみ、ソフト依存）
     modCompileOnlyApi "curse.maven:nutritional-balance-448222:4619889"
 
+    // Quality Food MOD連携（コンパイル時のみ、ソフト依存）
+    modCompileOnlyApi "curse.maven:quality-food-973932:7618171"
+
     modRuntimeOnly "curse.maven:farmers-delight-398521:4638874"
     modRuntimeOnly "mezz.jei:jei-1.20.1-forge:15.20.0.106"
     modRuntimeOnly "squeek.appleskin:appleskin-forge:mc1.20.1-2.5.1"

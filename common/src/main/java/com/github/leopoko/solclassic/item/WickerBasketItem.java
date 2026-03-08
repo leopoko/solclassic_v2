@@ -3,6 +3,7 @@ package com.github.leopoko.solclassic.item;
 import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.container.FoodChestMenu;
 import com.github.leopoko.solclassic.container.FoodContainer;
+import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -244,7 +245,8 @@ public class WickerBasketItem extends Item {
                 if (itemStack.getItem().getFoodProperties() == null) {
                     continue;
                 }
-                int nutrition = itemStack.getItem().getFoodProperties().getNutrition();
+                // Quality Food等のMODによる品質修正を反映した栄養値を取得
+                int nutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(itemStack, player);
                 float Multiplier = FoodCalculator.CalculateMultiplier(itemStack, player);
                 nutrition = FoodCalculator.CalculateNutrition(nutrition, Multiplier);
                 if (mostNutrition < nutrition) {
