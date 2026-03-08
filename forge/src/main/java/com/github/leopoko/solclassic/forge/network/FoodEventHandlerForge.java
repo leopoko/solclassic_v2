@@ -3,8 +3,11 @@ package com.github.leopoko.solclassic.forge.network;
 import com.github.leopoko.solclassic.network.IFoodEventHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -108,5 +111,25 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
     public LinkedList<ItemStack> getClientFoodHistory(Player player) {
         LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
         return history != null ? history : new LinkedList<>();
+    }
+
+    /**
+     * Forge拡張APIを使用して、Quality Food等のMODによる品質修正を反映した栄養値を返す。
+     * ItemStack.getFoodProperties(LivingEntity) はForge固有のメソッドで、
+     * MODがIForgeItem.getFoodProperties(ItemStack, LivingEntity)をオーバーライドすることで
+     * アイテムごとに異なるFoodPropertiesを返すことができる。
+     */
+    @Override
+    public int getEffectiveNutrition(ItemStack stack, @Nullable Player player) {
+        FoodProperties fp = stack.getFoodProperties((LivingEntity) player);
+        if (fp == null) fp = stack.getItem().getFoodProperties();
+        return fp != null ? fp.getNutrition() : 0;
+    }
+
+    @Override
+    public float getEffectiveSaturationModifier(ItemStack stack, @Nullable Player player) {
+        FoodProperties fp = stack.getFoodProperties((LivingEntity) player);
+        if (fp == null) fp = stack.getItem().getFoodProperties();
+        return fp != null ? fp.getSaturationModifier() : 0f;
     }
 }

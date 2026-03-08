@@ -1,6 +1,7 @@
 package com.github.leopoko.solclassic.utils;
 
 import com.github.leopoko.solclassic.item.WickerBasketItem;
+import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.Minecraft;
@@ -23,10 +24,11 @@ public class ClientTooltipHandler {
                 if (player != null) {
                     ItemStack food = WickerBasketItem.getMostNutritiousFood(stack, player);
                     if (!food.isEmpty()) {
-                        FoodProperties foodProps = food.getItem().getFoodProperties();
-                        if (foodProps != null) {
+                        // Quality Food等のMODによる品質修正を反映した栄養値を取得
+                        int baseNutrition = FoodHistoryHolder.INSTANCE.getEffectiveNutrition(food, player);
+                        if (baseNutrition > 0) {
                             float multiplier = FoodCalculator.CalculateMultiplier(food, player);
-                            int nutrition = FoodCalculator.CalculateNutrition(foodProps.getNutrition(), multiplier);
+                            int nutrition = FoodCalculator.CalculateNutrition(baseNutrition, multiplier);
                             // 選択された食べ物の名前と減衰後の栄養値を表示
                             tooltips.add(Component.translatable("tooltip.wicker_basket.food_info",
                                     food.getHoverName(), nutrition));
