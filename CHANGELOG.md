@@ -1,16 +1,22 @@
 # Changelog
 
-## [2.06] - 2026-03-08
+## [2.07] - 2026-03-10
 
 ### Added
 - Added compatibility with Quality Food mod. SoL Classic's food decay now correctly applies to quality-modified nutrition values instead of base values. Food history treats items of different quality as the same food.
 
+### Fixed
+- Fixed dedicated server crash caused by FoodHistoryBookItem directly referencing client-only classes (Screen, Minecraft). Replaced client references with a Consumer<Player> callback pattern, registering the screen opener only on the client side via ClientTooltipHandler.init().
+
 ---
 
-## [2.06] - 2026-03-08 (日本語)
+## [2.07] - 2026-03-10 (日本語)
 
 ### 追加
 - Quality Food MODとの互換性を追加。SoL Classicの食事減衰が、品質による栄養値変更を正しく反映するよう修正。食事履歴上では品質の異なる同じ食べ物は同一として扱う。
+
+### 修正
+- FoodHistoryBookItemがクライアント専用クラス（Screen, Minecraft）を直接参照していたため、専用サーバーでクラッシュする問題を修正。クライアント参照をConsumer<Player>コールバックに置き換え、ClientTooltipHandler.init()でクライアント側のみスクリーンオープナーを登録するように変更。
 
 ---
 
