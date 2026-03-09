@@ -1,5 +1,7 @@
 package com.github.leopoko.solclassic.utils;
 
+import com.github.leopoko.solclassic.client.FoodHistoryBookScreen;
+import com.github.leopoko.solclassic.item.FoodHistoryBookItem;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import dev.architectury.event.events.client.ClientTooltipEvent;
@@ -18,6 +20,9 @@ import java.util.List;
 
 public class ClientTooltipHandler {
     public static void init() {
+        // クライアント環境でのみFoodHistoryBookItemの画面オープン処理を登録
+        FoodHistoryBookItem.screenOpener = FoodHistoryBookScreen::open;
+
         ClientTooltipEvent.ITEM.register((ItemStack stack, List<Component> tooltips, Item.TooltipContext context, TooltipFlag flag) -> {
             if (stack.getItem() instanceof WickerBasketItem) {
                 // WickerBasket: 選択された食べ物の情報を表示
