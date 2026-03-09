@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.07+1.21.1] - 2026-03-10
+
+### Fixed
+- Fixed dedicated server crash caused by FoodHistoryBookItem importing client-only classes (FoodHistoryBookScreen, Minecraft). Refactored to use a Consumer<Player> callback pattern, with the screen opener registered from ClientTooltipHandler.init() on the client side only.
+
+---
+
+## [2.07+1.21.1] - 2026-03-10 (日本語)
+
+### 修正
+- FoodHistoryBookItemがクライアント専用クラス（FoodHistoryBookScreen、Minecraft）を直接importしていたため、専用サーバーでアイテム登録時にクラッシュする問題を修正。Consumer<Player>コールバックパターンに変更し、screenOpenerはクライアント側のClientTooltipHandler.init()で登録する方式に修正。
+
+---
+
 ## [2.06+1.21.1] - 2026-03-08
 
 ### Added
