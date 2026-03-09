@@ -17,6 +17,10 @@ import java.util.List;
 
 public class ClientTooltipHandler {
     public static void init() {
+        // 食事記録の本のスクリーンオープナーを登録
+        com.github.leopoko.solclassic.item.FoodHistoryBookItem.screenOpener =
+                com.github.leopoko.solclassic.client.FoodHistoryBookScreen::open;
+
         ClientTooltipEvent.ITEM.register((ItemStack stack, List<Component> tooltips, TooltipFlag flag) -> {
             if (stack.getItem() instanceof WickerBasketItem) {
                 // WickerBasket: 選択された食べ物の情報を表示
