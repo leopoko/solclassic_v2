@@ -1,7 +1,5 @@
 package com.github.leopoko.solclassic.item;
 
-import com.github.leopoko.solclassic.client.FoodHistoryBookScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -14,8 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class FoodHistoryBookItem extends Item {
+
+    // クライアントサイドで画面を開くためのコールバック（サーバーではno-op）
+    public static Consumer<Player> screenOpener = player -> {};
 
     public FoodHistoryBookItem(Properties properties) {
         super(properties);
@@ -25,13 +27,9 @@ public class FoodHistoryBookItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide()) {
-            openScreen(player);
+            screenOpener.accept(player);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-    }
-
-    private void openScreen(Player player) {
-        Minecraft.getInstance().setScreen(new FoodHistoryBookScreen(player));
     }
 
     @Override
