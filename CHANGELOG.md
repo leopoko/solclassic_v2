@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.08+1.21.1] - 2026-03-11
+
+### Added
+- Added `enableTooltip` config option (default: true): controls whether the food decay tooltip ("Hunger recovery reduced by X%") is shown on food items.
+- Added `enableItemDescription` config option (default: true): controls whether description tooltips are shown on mod items (Wicker Basket, Food History Book).
+
+---
+
+## [2.08+1.21.1] - 2026-03-11 (日本語)
+
+### 追加
+- `enableTooltip` 設定項目を追加（デフォルト: true）: 食べ物アイテムに表示される減衰率ツールチップ（「満腹度回復が X% 減少しています」）の表示/非表示を切り替える。
+- `enableItemDescription` 設定項目を追加（デフォルト: true）: MODアイテム（WickerBasket、食事記録の本）の説明文ツールチップの表示/非表示を切り替える。
+
+---
+
 ## [2.07+1.21.1] - 2026-03-10
 
 ### Fixed

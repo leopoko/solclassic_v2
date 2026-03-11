@@ -94,6 +94,7 @@ public class WickerBasketItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
+        if (!SolclassicConfigData.enableItemDescription) return;
         tooltip.add(Component.translatable("tooltip.wicker_basket.description1"));
         tooltip.add(Component.translatable("tooltip.wicker_basket.description2"));
     }

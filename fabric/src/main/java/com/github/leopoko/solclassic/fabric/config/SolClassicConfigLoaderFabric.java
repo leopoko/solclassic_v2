@@ -63,8 +63,10 @@ public class SolClassicConfigLoaderFabric {
             Double longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
             Boolean enableWickerBasket = settings.getBoolean("enableWickerBasket");
             Boolean guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
+            Boolean enableTooltip = settings.getBoolean("enableTooltip");
+            Boolean enableItemDescription = settings.getBoolean("enableItemDescription");
 
-            if (maxFoodHistoryVal == null || maxShortFoodHistoryVal == null || longFoodDecayModifiersVal == null || enableWickerBasket == null || guaranteeMinimumNutrition == null) {
+            if (maxFoodHistoryVal == null || maxShortFoodHistoryVal == null || longFoodDecayModifiersVal == null || enableWickerBasket == null || guaranteeMinimumNutrition == null || enableTooltip == null || enableItemDescription == null) {
                 server.sendSystemMessage(Component.literal("Invalid config keys detected. Recreating default config."));
                 recreateDefaultConfig(server, configFile);
                 result = Toml.parse(configFile);
@@ -74,6 +76,8 @@ public class SolClassicConfigLoaderFabric {
                 longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
                 enableWickerBasket = settings.getBoolean("enableWickerBasket");
                 guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
+                enableTooltip = settings.getBoolean("enableTooltip");
+                enableItemDescription = settings.getBoolean("enableItemDescription");
             }
 
             // shortFoodDecayModifiers は List<Double> として取得（値は Number 型なので変換する）
@@ -97,6 +101,8 @@ public class SolClassicConfigLoaderFabric {
             SolclassicConfigData.longFoodDecayModifiers = longFoodDecayModifiersVal.floatValue();
             SolclassicConfigData.enableWickerBasket = enableWickerBasket;
             SolclassicConfigData.guaranteeMinimumNutrition = guaranteeMinimumNutrition;
+            SolclassicConfigData.enableTooltip = enableTooltip;
+            SolclassicConfigData.enableItemDescription = enableItemDescription;
 
         } catch (IOException e) {
             e.printStackTrace();
