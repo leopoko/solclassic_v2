@@ -25,6 +25,8 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
         public final ModConfigSpec.BooleanValue enableWickerBasket;
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
+        public final ModConfigSpec.BooleanValue enableTooltip;
+        public final ModConfigSpec.BooleanValue enableItemDescription;
 
         public ServerConfig(ModConfigSpec.Builder builder) {
             // NeoForge 1.21.1 ではSERVERコンフィグは config/ ディレクトリにグローバルに保存されます。
@@ -68,6 +70,14 @@ public class SolClassicConfigNeoForge {
             guaranteeMinimumNutrition = builder
                     .comment("Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.")
                     .define("guaranteeMinimumNutrition", false);
+
+            enableTooltip = builder
+                    .comment("Enable food decay tooltip on food items")
+                    .define("enableTooltip", true);
+
+            enableItemDescription = builder
+                    .comment("Enable description tooltip on mod items (Wicker Basket, Food History Book)")
+                    .define("enableItemDescription", true);
 
             builder.pop();
         }

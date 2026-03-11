@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.item;
 
+import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -36,6 +37,7 @@ public class FoodHistoryBookItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+        if (!SolclassicConfigData.enableItemDescription) return;
         tooltip.add(Component.translatable("tooltip.food_history_book.description"));
     }
 }
