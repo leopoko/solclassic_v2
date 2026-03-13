@@ -166,6 +166,11 @@ forge_version=1.20.1-47.4.0
 
 ## 開発時の注意事項
 
+## バージョン更新手順
+1. `gradle.properties` の `mod_version` を新バージョンに変更（例: `1.2` → `1.3`）
+2. `CHANGELOG.md` の先頭に新バージョンのセクションを追加（`## [x.x]` 形式）
+3. ビルド確認: `./gradlew build`
+
 ### Mixin について
 - Mixin は `priority = 1100` で設定されている（他MODとの競合を避けるため）
 - `DisableConflictingMixinPlugin` で Phantasm MOD の `LivingEntityMixin` との競合を解消
