@@ -11,12 +11,17 @@ public class FoodChestMenu extends ChestMenu {
         super(menuType, id, playerInventory, container, rows);
         // すべてのスロットを食料専用スロットに変更
         for (int i = 0; i < container.getContainerSize(); i++) {
-            this.slots.set(i, new FoodSlot(container, i, 8 + (i % 9) * 18, 18 + (i / 9) * 18));
+            FoodSlot foodSlot = new FoodSlot(container, i, 8 + (i % 9) * 18, 18 + (i / 9) * 18);
+            foodSlot.index = i;
+            this.slots.set(i, foodSlot);
         }
 
-        // プレイヤーのインベントリスロットに対する制限
+        // プレイヤーのインベントリスロットに対する制限（バスケットを持っているスロットをロック）
         if (lockedSlotIndex >= 0 && lockedSlotIndex < playerInventory.items.size()) {
-            this.slots.set(rows * 9 + 27 + lockedSlotIndex, new LockedSlot(playerInventory, lockedSlotIndex, 8 + (lockedSlotIndex % 9) * 18, 142 + (lockedSlotIndex / 9) * 18));
+            int menuSlotIndex = rows * 9 + 27 + lockedSlotIndex;
+            LockedSlot lockedSlot = new LockedSlot(playerInventory, lockedSlotIndex, 8 + (lockedSlotIndex % 9) * 18, 142 + (lockedSlotIndex / 9) * 18);
+            lockedSlot.index = menuSlotIndex;
+            this.slots.set(menuSlotIndex, lockedSlot);
         }
     }
 }
