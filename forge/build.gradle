@@ -62,6 +62,11 @@ dependencies {
     // Quality Food MOD連携（コンパイル時のみ、ソフト依存）
     modCompileOnlyApi "curse.maven:quality-food-973932:7618171"
 
+    // Sophisticated Backpacks連携（コンパイル時のみ、ソフト依存）
+    // FeedingUpgradeのMixin対象クラス解決に必要
+    modCompileOnlyApi "curse.maven:sophisticatedcore-618298:7591502"
+    modCompileOnlyApi "curse.maven:sophisticatedbackpacks-422301:7726018"
+
     modRuntimeOnly "curse.maven:farmers-delight-398521:4638874"
     modRuntimeOnly "mezz.jei:jei-1.20.1-forge:15.20.0.106"
     modRuntimeOnly "squeek.appleskin:appleskin-forge:mc1.20.1-2.5.1"
