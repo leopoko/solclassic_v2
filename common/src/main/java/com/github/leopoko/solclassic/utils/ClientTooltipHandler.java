@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.utils;
 
+import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import dev.architectury.event.events.client.ClientTickEvent;
@@ -22,6 +23,8 @@ public class ClientTooltipHandler {
                 com.github.leopoko.solclassic.client.FoodHistoryBookScreen::open;
 
         ClientTooltipEvent.ITEM.register((ItemStack stack, List<Component> tooltips, TooltipFlag flag) -> {
+            if (!SolclassicConfigData.enableTooltip) return;
+
             if (stack.getItem() instanceof WickerBasketItem) {
                 // WickerBasket: 選択された食べ物の情報を表示
                 Player player = Minecraft.getInstance().player;

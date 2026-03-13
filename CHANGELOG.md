@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.08] - 2026-03-11
+
+### Added
+- Added `enableTooltip` config option to toggle the food decay tooltip on food items. When set to false, the decay percentage tooltip will not be displayed. Default is true.
+- Added `enableItemDescription` config option to toggle the description tooltip on mod items (Wicker Basket, Food History Book, etc.). When set to false, item descriptions will not be displayed. Default is true.
+
+---
+
+## [2.08] - 2026-03-11 (日本語)
+
+### 追加
+- `enableTooltip` 設定項目を追加。falseに設定すると、食べ物アイテムの減衰率ツールチップが非表示になる。デフォルトはtrue。
+- `enableItemDescription` 設定項目を追加。falseに設定すると、MODアイテム（WickerBasket、食事記録の本等）の説明文ツールチップが非表示になる。デフォルトはtrue。
+
+---
+
 ## [2.07] - 2026-03-10
 
 ### Added

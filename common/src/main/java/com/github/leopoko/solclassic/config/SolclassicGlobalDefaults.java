@@ -28,6 +28,8 @@ public class SolclassicGlobalDefaults {
     public List<String> foodBlacklist = Arrays.asList("minecraft:dried_kelp");
     public boolean enableWickerBasket = true;
     public boolean guaranteeMinimumNutrition = false;
+    public boolean enableTooltip = true;
+    public boolean enableItemDescription = true;
 
     /**
      * config ディレクトリから solclassic-defaults.toml を読み込む。
@@ -95,6 +97,12 @@ public class SolclassicGlobalDefaults {
                         break;
                     case "guaranteeMinimumNutrition":
                         this.guaranteeMinimumNutrition = Boolean.parseBoolean(value);
+                        break;
+                    case "enableTooltip":
+                        this.enableTooltip = Boolean.parseBoolean(value);
+                        break;
+                    case "enableItemDescription":
+                        this.enableItemDescription = Boolean.parseBoolean(value);
                         break;
                     default:
                         // 未知のキーは無視
@@ -170,7 +178,11 @@ public class SolclassicGlobalDefaults {
         sb.append("#Enable Wicker Basket\n");
         sb.append("enableWickerBasket = ").append(defaults.enableWickerBasket).append("\n");
         sb.append("#Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.\n");
-        sb.append("guaranteeMinimumNutrition = ").append(defaults.guaranteeMinimumNutrition);
+        sb.append("guaranteeMinimumNutrition = ").append(defaults.guaranteeMinimumNutrition).append("\n");
+        sb.append("#Enable food decay tooltip on food items\n");
+        sb.append("enableTooltip = ").append(defaults.enableTooltip).append("\n");
+        sb.append("#Enable item description tooltip on mod items (Wicker Basket, Food History Book, etc.)\n");
+        sb.append("enableItemDescription = ").append(defaults.enableItemDescription);
         return sb.toString();
     }
 
@@ -192,6 +204,8 @@ public class SolclassicGlobalDefaults {
         defaults.foodBlacklist = new ArrayList<>(SolclassicConfigData.foodBlacklist);
         defaults.enableWickerBasket = SolclassicConfigData.enableWickerBasket;
         defaults.guaranteeMinimumNutrition = SolclassicConfigData.guaranteeMinimumNutrition;
+        defaults.enableTooltip = SolclassicConfigData.enableTooltip;
+        defaults.enableItemDescription = SolclassicConfigData.enableItemDescription;
 
         StringBuilder sb = new StringBuilder();
         sb.append("# Spice of Life: Classic Edition - Global Default Settings\n");
