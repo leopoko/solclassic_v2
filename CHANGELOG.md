@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.09] - 2026-03-13
+
+### Fixed
+- Fixed basket (Lunch Basket) slot bug where placing a 4th item would overwrite the item in the first slot. When replacing Slots with FoodSlot/LockedSlot via `this.slots.set()` in FoodChestMenu, the `slot.index` field (menu slot position ID) was not set, defaulting to 0 for all replaced slots. This caused incorrect slot identification during item placement. Reported on Mohist (Bukkit+Forge hybrid) servers.
+
+---
+
+## [2.09] - 2026-03-13 (日本語)
+
+### 修正
+- バスケット（Lunch Basket）に4つ目のアイテムを入れると、1番目のスロットのアイテムが上書きされるバグを修正。FoodChestMenuで `this.slots.set()` によりSlotをFoodSlot/LockedSlotに差し替える際、`slot.index`フィールド（メニュー内スロット位置ID）が設定されず全てデフォルトの0になっていたため、アイテム配置時のスロット識別が正しく行われなかった。Mohist（Bukkit+Forgeハイブリッド）サーバーで報告。
+
+---
+
 ## [2.08] - 2026-03-11
 
 ### Added
