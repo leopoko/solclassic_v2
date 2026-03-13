@@ -180,7 +180,14 @@ public class WickerBasketItem extends Item {
         stack.setTag(tag);
     }
 
-    private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack) {
+    /**
+     * バスケット内から指定された食べ物を1つ消費する。
+     * PlayerMixinForge等の外部クラスからSBバックパック経由の食事処理で使用される。
+     *
+     * @param wickerbasket WickerBasketのItemStack（NBTが直接変更される）
+     * @param stack        消費する食べ物のItemStack（getItem()で種類を照合）
+     */
+    public static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack) {
         CompoundTag tag = wickerbasket.getTag();
         FoodContainer container = createInventoryFromItemStack(wickerbasket);
         ListTag listTag = new ListTag();
