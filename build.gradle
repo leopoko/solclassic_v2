@@ -184,11 +184,13 @@ publishMods {
         file = project(":forge").remapJar.archiveFile
         displayName = "SoL:Classic_v${project.mod_version} (Forge)"
         modLoaders.add("forge")
+        modLoaders.add("neoforge")
     }
     modrinth("modrinthForge") {
         from mrOptions
         file = project(":forge").remapJar.archiveFile
         displayName = "SoL:Classic_v${project.mod_version} (Forge)"
         modLoaders.add("forge")
+        modLoaders.add("neoforge")
     }
 }
