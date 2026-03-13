@@ -9,7 +9,8 @@
   ],
   "mixins": [
     "PlayerMixinForge",
-    "LivingEntityMixinForge"
+    "LivingEntityMixinForge",
+    "WickerBasketMixinForge"
   ],
   "injectors": {
     "defaultRequire": 1
