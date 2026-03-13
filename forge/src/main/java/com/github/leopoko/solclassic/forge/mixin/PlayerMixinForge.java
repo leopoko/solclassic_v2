@@ -37,9 +37,15 @@ public class PlayerMixinForge {
         String itemId = BuiltInRegistries.ITEM.getKey(entity.getItem()).toString();
 
         boolean isWickerBasket = false;
+        // SBバックパック等からWickerBasketが直接eat()に渡された場合の参照を保持
+        // バスケットから食べ物を消費するために使用する
+        ItemStack wickerBasketStack = ItemStack.EMPTY;
+
         if (itemId.equals("solclassic:wicker_basket")){
-            // 旧方式: バスケット自体がPlayer.eat()に渡された場合（互換性のため保持）
+            // 直接方式: バスケット自体がPlayer.eat()に渡された場合
+            // （SBのFeeding Upgrade経由、または旧方式の互換性のため）
             isWickerBasket = true;
+            wickerBasketStack = entity; // 元のバスケット参照を保存（NBT変更用）
             WickerBasketItem wickerBasketItem = (WickerBasketItem) entity.getItem();
             entity = wickerBasketItem.getMostNutritiousFood(entity, player);
             // 実際の食べ物アイテムでitemIdを更新
@@ -90,10 +96,19 @@ public class PlayerMixinForge {
                 FoodHistoryHolder.INSTANCE.addFoodHistory((ServerPlayer) player, foodToRecord, SolClassicConfigForge.CONFIG.maxFoodHistorySize.get());
                 FoodHistorySync.syncFoodHistory((ServerPlayer) player);
 
-                // WickerBasketから食べた場合、実際の食べ物アイテムでイベントを発火し
-                // Nutritional Balance等の食事イベント監視MODに通知する
+                // WickerBasketから食べた場合の追加処理
                 if (isWickerBasket) {
+                    // 実際の食べ物アイテムでイベントを発火し
+                    // Nutritional Balance等の食事イベント監視MODに通知する
                     ModCompatHelper.notifyFoodConsumedFromBasket((ServerPlayer) player, entity);
+
+                    // SBバックパック等からWickerBasketが直接eat()に渡された場合、
+                    // バスケットのNBTから消費した食べ物を削除する。
+                    // 通常のプレイヤー使用ではfinishUsingItem()が消費を処理するため、
+                    // wickerBasketStackはEMPTYでこのブロックは実行されない。
+                    if (!wickerBasketStack.isEmpty()) {
+                        WickerBasketItem.shrinkItemFromInventory(wickerBasketStack, foodToRecord);
+                    }
                 }
             }
         }

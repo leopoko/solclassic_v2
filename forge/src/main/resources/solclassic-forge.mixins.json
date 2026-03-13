@@ -10,7 +10,8 @@
   "mixins": [
     "PlayerMixinForge",
     "LivingEntityMixinForge",
-    "WickerBasketMixinForge"
+    "WickerBasketMixinForge",
+    "FoodItemMixinForge"
   ],
   "injectors": {
     "defaultRequire": 1
