@@ -10,8 +10,7 @@
   "mixins": [
     "PlayerMixinForge",
     "LivingEntityMixinForge",
-    "WickerBasketMixinForge",
-    "SBFeedingUpgradeMixin"
+    "WickerBasketMixinForge"
   ],
   "injectors": {
     "defaultRequire": 1

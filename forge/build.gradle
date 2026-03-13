@@ -12,6 +12,7 @@ loom {
     forge {
         mixinConfig "solclassic-forge.mixins.json"
         mixinConfig "phantasm.mixins.json"
+        mixinConfig "solclassic-sb-compat.mixins.json"
     }
 }
 
