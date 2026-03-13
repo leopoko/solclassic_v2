@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.09+1.21.1] - 2026-03-13
+
+### Fixed
+- Fixed a bug in FoodChestMenu where replacing slots via `this.slots.set()` did not set `Slot.index` (menu slot position ID), leaving it at the default value of 0. This caused slot identification to break, resulting in items in slot 0 being overwritten when inserting a 4th item into the basket, particularly in Bukkit bridge environments such as Mohist.
+
+---
+
+## [2.09+1.21.1] - 2026-03-13 (日本語)
+
+### 修正
+- FoodChestMenuのコンストラクタで `this.slots.set()` によりスロットを差し替えた際、`Slot.index`（メニュー内スロット位置ID）がデフォルトの0のまま設定されないバグを修正。全ての差し替えスロットが index = 0 を持つことでスロット識別が破綻し、バスケットに4つ目のアイテムを入れるとスロット0のアイテムが上書きされて消失する問題が発生していた（特にMohist等のBukkitブリッジ環境で顕著）。
+
+---
+
 ## [2.07+1.21.1] - 2026-03-10
 
 ### Fixed
