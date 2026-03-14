@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.10] - 2026-03-14
+
+### Added
+- Added compatibility with Sophisticated Backpacks' Feeding Upgrade (auto-feeding feature). SoL Classic now directly integrates with SB's FeedingUpgradeWrapper via conditional Mixin.
+  - Food with 0% recovery rate (fully decayed) is now skipped by SB's auto-feeding, preventing wasteful consumption.
+  - When a Wicker Basket is in an SB backpack, the Feeding Upgrade will prioritize eating from the Wicker Basket, selecting the most nutritious food inside (with decay considered).
+- SB compatibility Mixin is conditionally loaded only when SophisticatedCore is present on the classpath, preventing crashes when SB is not installed.
+
+---
+
+## [2.10] - 2026-03-14 (日本語)
+
+### 追加
+- Sophisticated Backpacksの自動食事機能（Feeding Upgrade）との互換性を追加。SBのFeedingUpgradeWrapperに条件付きMixinで直接介入する方式。
+  - 減衰率0%（完全に減衰した）食べ物はSBの自動食事でスキップされるようになり、無駄な消費を防止。
+  - WickerBasketがSBバックパック内にある場合、Feeding Upgradeがバスケット内から最も栄養価の高い食べ物を優先的に選択して食べる（減衰考慮済み）。
+- SB互換Mixinは、SophisticatedCoreがクラスパス上に存在する場合のみ条件付きでロードされ、SB未インストール時のクラッシュを防止。
+
+---
+
 ## [2.09] - 2026-03-13
 
 ### Fixed
