@@ -18,6 +18,9 @@ config = "solclassic-neoforge.mixins.json"
 [[mixins]]
 config = "solclassic.mixins.json"
 
+[[mixins]]
+config = "solclassic-sb-compat.mixins.json"
+
 [[dependencies.solclassic]]
 modId = "neoforge"
 mandatory = true

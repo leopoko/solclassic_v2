@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.10+1.21.1] - 2026-03-14
+
+### Added
+- Added Sophisticated Backpacks (SophisticatedCore) Feeding Upgrade compatibility. SoL Classic's food decay is now correctly applied when SB's Feeding Upgrade auto-feeds the player.
+  - Foods with 0% decay recovery are excluded from Feeding Upgrade's auto-feeding.
+  - Wicker Basket in SB backpacks now correctly feeds from the basket's inventory instead of being consumed as an item.
+- Conditional Mixin loading via `SBCompatMixinPlugin`: SB compatibility mixins are only loaded when SophisticatedCore is present, preventing crashes when SB is not installed.
+
+---
+
+## [2.10+1.21.1] - 2026-03-14 (日本語)
+
+### 追加
+- Sophisticated Backpacks (SophisticatedCore) の Feeding Upgrade との互換性を追加。SBのFeeding Upgradeによる自動給餌にSoL Classicの食事減衰が正しく適用されるようになった。
+  - 減衰により回復率が0%になった食べ物はFeeding Upgradeの自動給餌対象から除外される。
+  - SBバックパック内のWicker Basketは、バスケット自体がアイテムとして消費されるのではなく、バスケット内の食べ物から正しく食事が行われるようになった。
+- `SBCompatMixinPlugin`による条件付きMixinロード: SB互換Mixinは SophisticatedCore が存在する場合のみ読み込まれ、SB未インストール時のクラッシュを防止。
+
+---
+
 ## [2.09+1.21.1] - 2026-03-13
 
 ### Fixed

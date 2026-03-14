@@ -45,12 +45,23 @@ public class PlayerMixinNeoForge {
         String itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
 
         boolean isWickerBasket = false;
+        // SBバックパック等からWickerBasketが直接eat()に渡された場合の参照を保持
+        // バスケットから食べ物を消費するために使用する
+        ItemStack wickerBasketStack = ItemStack.EMPTY;
+
         if (itemId.equals("solclassic:wicker_basket")) {
+            // 直接方式: バスケット自体がPlayer.eat()に渡された場合
+            // （SBのFeeding Upgrade経由、または旧方式の互換性のため）
             isWickerBasket = true;
+            wickerBasketStack = itemStack; // 元のバスケット参照を保存（NBT変更用）
             WickerBasketItem wickerBasketItem = (WickerBasketItem) itemStack.getItem();
             itemStack = wickerBasketItem.getMostNutritiousFood(itemStack, player);
             itemId = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
         } else {
+            // 委譲方式: WickerBasketItem.finishUsingItem()がfoodCopy.finishUsingItem()に委譲し、
+            // その中でplayer.eat(foodCopy)が呼ばれた場合。
+            // entityは既に実際の食べ物だが、player.getUseItem()はまだバスケットを指しているため
+            // これでWickerBasket経由の食事を検出できる。
             ItemStack useItem = player.getUseItem();
             if (!useItem.isEmpty() && useItem.getItem() instanceof WickerBasketItem) {
                 isWickerBasket = true;
@@ -101,10 +112,19 @@ public class PlayerMixinNeoForge {
             FoodHistoryHolder.INSTANCE.addFoodHistory(serverPlayer, foodToRecord, SolclassicConfigData.maxFoodHistorySize);
             FoodHistorySync.syncFoodHistory(serverPlayer);
 
-            // WickerBasketから食べた場合、実際の食べ物アイテムでイベントを発火し
-            // Nutritional Balance等の食事イベント監視MODに通知する
+            // WickerBasketから食べた場合の追加処理
             if (isWickerBasket) {
+                // 実際の食べ物アイテムでイベントを発火し
+                // Nutritional Balance等の食事イベント監視MODに通知する
                 ModCompatHelperNeoForge.notifyFoodConsumedFromBasket(serverPlayer, foodToRecord);
+
+                // SBバックパック等からWickerBasketが直接eat()に渡された場合、
+                // バスケットのNBTから消費した食べ物を削除する。
+                // 通常のプレイヤー使用ではfinishUsingItem()が消費を処理するため、
+                // wickerBasketStackはEMPTYでこのブロックは実行されない。
+                if (!wickerBasketStack.isEmpty()) {
+                    WickerBasketItem.shrinkItemFromInventory(wickerBasketStack, foodToRecord, serverPlayer.registryAccess());
+                }
             }
         }
     }

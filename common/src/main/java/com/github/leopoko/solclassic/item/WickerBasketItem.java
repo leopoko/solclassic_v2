@@ -161,7 +161,7 @@ public class WickerBasketItem extends Item {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
-    private static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack, HolderLookup.Provider registries) {
+    public static void shrinkItemFromInventory(ItemStack wickerbasket, ItemStack stack, HolderLookup.Provider registries) {
         FoodContainer container = createInventoryFromItemStack(wickerbasket, registries);
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack itemStack = container.getItem(i);

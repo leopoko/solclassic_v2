@@ -1,0 +1,11 @@
+{
+  "required": false,
+  "package": "com.github.leopoko.solclassic.neoforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "com.github.leopoko.solclassic.neoforge.mixin.SBCompatMixinPlugin",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

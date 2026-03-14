@@ -36,11 +36,17 @@ dependencies {
     // Quality Food MOD連携（コンパイル時のみ、ソフト依存）
     modCompileOnly "curse.maven:quality-food-973932:7653821"
 
+    // Sophisticated Backpacks互換（コンパイル時のみ、ソフト依存）
+    modCompileOnlyApi "curse.maven:sophisticatedcore-618298:7698330"
+    modCompileOnlyApi "curse.maven:sophisticatedbackpacks-422301:7414211"
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle(project(path: ':common', configuration: 'transformProductionNeoForge'))
 
     runtimeOnly "curse.maven:quality-food-973932:7653821"
     runtimeOnly "curse.maven:appleskin-248787:7517379"
+    runtimeOnly "curse.maven:sophisticatedcore-618298:7698330"
+    runtimeOnly "curse.maven:sophisticatedbackpacks-422301:7414211"
 }
 
 processResources {
