@@ -5,10 +5,12 @@ import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,9 +41,10 @@ public class SBFeedingUpgradeMixin {
      * 減衰後の栄養値が0以下の場合はfalseを返す。
      */
     @Inject(method = "isEdible", at = @At("RETURN"), cancellable = true, require = 0)
-    private void solclassic$skipZeroDecayFood(ItemStack stack, Player player, CallbackInfoReturnable<Boolean> cir) {
+    private static void solclassic$skipZeroDecayFood(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) return; // 既に非食用と判定されている
         if (stack.getItem() instanceof WickerBasketItem) return; // WickerBasketは別途処理
+        if (!(entity instanceof Player player)) return; // Player以外は無視
         if (FoodHistoryHolder.INSTANCE == null) return; // 未初期化
 
         // ブラックリスト食品は減衰の影響を受けないためスキップ
@@ -75,7 +78,7 @@ public class SBFeedingUpgradeMixin {
      *   4. SBの通常フローをキャンセル
      */
     @Inject(method = "tryFeedingStack", at = @At("HEAD"), cancellable = true, require = 0)
-    private void solclassic$handleWickerBasketFeeding(Level level, int hungerLevel, Player player, Integer slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    private void solclassic$handleWickerBasketFeeding(Level level, int hungerLevel, Player player, Integer slot, ItemStack stack, ITrackedContentsItemHandler inventory, CallbackInfoReturnable<Boolean> cir) {
         if (!(stack.getItem() instanceof WickerBasketItem)) return;
 
         // バスケット内の最も栄養価の高い食べ物を取得（減衰考慮済み）
