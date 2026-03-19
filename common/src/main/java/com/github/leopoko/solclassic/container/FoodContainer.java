@@ -1,5 +1,7 @@
 package com.github.leopoko.solclassic.container;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -22,6 +24,19 @@ public class FoodContainer extends SimpleContainer implements Container, Stacked
      */
     private boolean isFood(ItemStack stack) {
         return !stack.isEmpty() && stack.getItem().isEdible();
+    }
+
+    /**
+     * バニラのSlot.mayPlace()が呼ぶバリデーション。
+     * FoodSlotと同等のチェックをコンテナレベルでも行い、二重の安全策とする。
+     */
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (!isFood(stack)) return false;
+        // WickerBasket自体をバスケット内に入れることを防止
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (itemId.toString().equals("solclassic:wicker_basket")) return false;
+        return true;
     }
 
     /**

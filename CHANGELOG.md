@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.11] - 2026-03-19
+
+### Fixed
+- Fixed Wicker Basket / Lunch Basket slot desync bug where placing food items would cause other items to be displaced or lost after approximately 3 items. The root cause was using vanilla `MenuType.GENERIC_9x1`, which caused the client to create a vanilla `ChestMenu` + `SimpleContainer` (no food validation) while the server used `FoodChestMenu` + `FoodContainer` + `FoodSlot` (with food validation). This client-server mismatch led to slot synchronization failures during item placement. Registered a custom `MenuType` via Architectury's `MenuRegistry.ofExtended()` so both client and server use `FoodChestMenu` with consistent `FoodSlot` + `FoodContainer` validation.
+- Added `canPlaceItem()` override to `FoodContainer` as an additional safety net for food-only validation at the container level (defense-in-depth alongside `FoodSlot.mayPlace()`).
+
+---
+
+## [2.11] - 2026-03-19 (日本語)
+
+### 修正
+- Wicker Basket / Lunch Basketに食べ物を約3個入れると他のアイテムが上書き・消失するバグを修正。バニラの`MenuType.GENERIC_9x1`を使用していたため、クライアント側がバニラの`ChestMenu` + `SimpleContainer`（食べ物バリデーション無し）を生成し、サーバー側の`FoodChestMenu` + `FoodContainer` + `FoodSlot`（食べ物バリデーション有り）と不一致が発生していた。Architecturyの`MenuRegistry.ofExtended()`でカスタム`MenuType`を登録し、クライアント・サーバー双方で`FoodChestMenu`を使用するよう修正。
+- `FoodContainer`に`canPlaceItem()`オーバーライドを追加し、コンテナレベルでも食べ物専用バリデーションを実施（`FoodSlot.mayPlace()`との二重安全策）。
+
+---
+
 ## [2.10] - 2026-03-14
 
 ### Added
