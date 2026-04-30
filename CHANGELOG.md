@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.11+1.21.1] - 2026-04-30
+
+### Fixed
+- Fixed a crash on dedicated Fabric servers caused by `NetworkManager.registerS2C()` being annotated `@Environment(EnvType.CLIENT)`. Following Architectury 13.0.8's documented pattern: server-side init now calls `registerS2CPayloadType` (type registration only), while client-side init continues to call `registerReceiver` with the packet handler.
+
+---
+
+## [2.11+1.21.1] - 2026-04-30 (日本語)
+
+### 修正
+- Fabric 専用サーバーで `NetworkManager.registerS2C()` が `@Environment(EnvType.CLIENT)` のため呼び出せず起動クラッシュが発生する問題を修正。Architectury 13.0.8 の仕様（サーバー側は `registerS2CPayloadType` でタイプ登録のみ、クライアント側は `registerReceiver` でレシーバー登録）に従い実装を変更。
+
+---
+
 ## [2.10+1.21.1] - 2026-03-14
 
 ### Added
