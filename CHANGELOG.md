@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.12+1.21.1] - 2026-05-01
+
+### Fixed
+- Fixed Fabric server config not taking effect on dedicated servers. The config path was resolved as a relative path, which could point to a different location depending on the working directory of the startup script. Now resolved to an absolute path via `toAbsolutePath()`. Config file location remains `<world>/serverconfig/solclassic-server.toml`.
+- Fixed potential NullPointerException in config array parsing (`shortFoodDecayModifiers`, `foodBlacklist`) that could silently prevent all config values from being applied.
+- Config values are now applied in the correct order: scalar values are written before array values, so scalar settings are always applied even if array parsing fails.
+
+---
+
+## [2.12+1.21.1] - 2026-05-01 (日本語)
+
+### 修正
+- Fabric 専用サーバーで設定が反映されない問題を修正。設定ファイルのパスが相対パスで解決されており、起動スクリプトのカレントディレクトリ次第で異なる場所を指す可能性があった。`toAbsolutePath()` で絶対パスに変換するよう修正。設定ファイルの場所は引き続き `<ワールドディレクトリ>/serverconfig/solclassic-server.toml`。
+- 設定ファイルの配列値 (`shortFoodDecayModifiers`、`foodBlacklist`) パース時の NullPointerException を修正。この例外が発生するとすべての設定値がデフォルトにサイレントフォールバックする問題があった。
+- 設定値の適用順序を修正。スカラー値を配列値より先に適用するようにしたため、配列パースが失敗してもスカラー設定は確実に反映される。
+
+---
+
 ## [2.11+1.21.1] - 2026-04-30
 
 ### Fixed

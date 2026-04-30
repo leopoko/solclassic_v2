@@ -24,17 +24,20 @@ public class SolClassicConfigLoaderFabric {
 
     /**
      * サーバー（ワールド）起動時に呼ばれる処理です。
-     * config/ 配下の solclassic-server.toml を読み込み、SolClassicConfig の値を更新します。
+     * world/serverconfig/solclassic-server.toml を読み込み、SolClassicConfig の値を更新します。
+     * toAbsolutePath() で絶対パスに変換することで、起動スクリプトのカレントディレクトリ差異を吸収します。
      */
     public static void loadConfig(MinecraftServer server) {
         try {
-            // サーバーのルートディレクトリから config フォルダを取得
-            Path configDir = server.getWorldPath(LevelResource.ROOT).resolve("serverconfig");
+            Path configDir = server.getWorldPath(LevelResource.ROOT)
+                    .toAbsolutePath()
+                    .resolve("serverconfig");
             if (!Files.exists(configDir)) {
                 Files.createDirectories(configDir);
             }
 
             Path configFile = configDir.resolve(CONFIG_FILE_NAME);
+            server.sendSystemMessage(Component.literal("[SolClassic] Config file path: " + configFile));
 
             // ファイルが存在しなければ、デフォルトの内容を書き込む
             if (!Files.exists(configFile)) {
@@ -80,22 +83,7 @@ public class SolClassicConfigLoaderFabric {
                 enableItemDescription = settings.getBoolean("enableItemDescription");
             }
 
-            // shortFoodDecayModifiers は List<Double> として取得（値は Number 型なので変換する）
-            List<Object> rawList = settings.getArray("shortFoodDecayModifiers").toList();
-            if (rawList != null) {
-                SolclassicConfigData.shortFoodDecayModifiers = rawList.stream()
-                        .map(o -> ((Number) o).floatValue())
-                        .collect(Collectors.toList());
-            }
-
-            List<Object> foodBlacklist = settings.getArray("foodBlacklist").toList();
-            if (foodBlacklist != null) {
-                SolclassicConfigData.foodBlacklist = foodBlacklist.stream()
-                        .map(Object::toString).collect(Collectors.toList());
-            }
-
-            server.sendSystemMessage(Component.literal("SolClassic config loaded successfully."));
-
+            // スカラー値を先に適用（配列パース失敗時もスカラー値は反映される）
             SolclassicConfigData.maxFoodHistorySize = maxFoodHistoryVal.intValue();
             SolclassicConfigData.maxShortFoodHistorySize = maxShortFoodHistoryVal.intValue();
             SolclassicConfigData.longFoodDecayModifiers = longFoodDecayModifiersVal.floatValue();
@@ -104,7 +92,28 @@ public class SolClassicConfigLoaderFabric {
             SolclassicConfigData.enableTooltip = enableTooltip;
             SolclassicConfigData.enableItemDescription = enableItemDescription;
 
-        } catch (IOException e) {
+            // shortFoodDecayModifiers は List<Double> として取得（nullチェック必須）
+            if (settings.getArray("shortFoodDecayModifiers") != null) {
+                List<Object> rawList = settings.getArray("shortFoodDecayModifiers").toList();
+                if (rawList != null) {
+                    SolclassicConfigData.shortFoodDecayModifiers = rawList.stream()
+                            .map(o -> ((Number) o).floatValue())
+                            .collect(Collectors.toList());
+                }
+            }
+
+            if (settings.getArray("foodBlacklist") != null) {
+                List<Object> foodBlacklist = settings.getArray("foodBlacklist").toList();
+                if (foodBlacklist != null) {
+                    SolclassicConfigData.foodBlacklist = foodBlacklist.stream()
+                            .map(Object::toString).collect(Collectors.toList());
+                }
+            }
+
+            server.sendSystemMessage(Component.literal("[SolClassic] Config loaded successfully."));
+
+        } catch (Exception e) {
+            server.sendSystemMessage(Component.literal("[SolClassic] Failed to load config: " + e.getMessage()));
             e.printStackTrace();
         }
     }
