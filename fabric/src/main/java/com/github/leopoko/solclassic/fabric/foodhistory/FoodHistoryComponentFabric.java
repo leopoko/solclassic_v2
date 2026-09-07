@@ -26,11 +26,16 @@ public class FoodHistoryComponentFabric implements IFoodHistoryComponentFabric {
      *
      * @param newHistory 新しい食事履歴
      */
-    public void setFood(FoodHistory newHistory) { // I don't think the history change needs to be detached
-        history.amountConsumed.clear();
-        history.amountConsumed.putAll(newHistory.amountConsumed);
-        history.consumedItems.clear();
-        history.consumedItems.addAll(newHistory.consumedItems);
+    public void setFood(FoodHistory newHistory) {
+        // 内部の history 自身を渡された場合、clear() で履歴が消えてしまうため何もしない
+        if (newHistory == null || newHistory == history) {
+            return;
+        }
+        history.clear();
+        // add() 経由で追加することで、消費回数キャッシュ (amountConsumed) も同時に再構築される
+        for (ItemStack stack : newHistory.consumedItems) {
+            history.add(stack.copy());
+        }
     }
 
     /**
