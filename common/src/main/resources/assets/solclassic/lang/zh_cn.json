@@ -1,0 +1,18 @@
+{
+  "tooltip.food_reduction": "当前食物收益减少 %s%%",
+  "item.solclassic.basket": "篮子",
+  "container.basket": "篮子",
+  "item.solclassic.large_basket": "大型篮子（旧版）",
+  "container.large_basket": "大型篮子（旧版）",
+  "item.solclassic.wicker_basket": "柳条篮",
+  "container.wicker_basket": "柳条篮",
+  "tooltip.wicker_basket.description1": "右键食用收益最高的食物",
+  "tooltip.wicker_basket.description2": "Shift+右键打开",
+  "tooltip.wicker_basket.food_info": "§7下一个：%s（营养值：%s）",
+  "item.solclassic.food_history_book": "食物记录书",
+  "tooltip.food_history_book.description": "右键单击查看食物记录",
+  "gui.food_history_book.title": "食物记录",
+  "gui.food_history_book.summary": "已食用 %s 种独特食物",
+  "gui.food_history_book.empty": "暂无食物历史记录",
+  "gui.food_history_book.page": "第 %s 页 / 共 %s 页"
+}
