@@ -151,6 +151,13 @@ publishMods {
         projectSlug = "foodvariations"
         minecraftVersions.add("1.20.1")
         javaVersions.add(JavaVersion.VERSION_17)
+        // CurseForge は environment グループ（Client / Server）の指定が必須。
+        // 未指定だと "You must select at least one version from the environment
+        // group of versions" で 400 エラーになりアップロードできない。
+        // このMODはサーバー側で食事履歴を管理し、クライアント側でツールチップを
+        // 表示するため両方必要。
+        clientRequired = true
+        serverRequired = true
         requires("architectury-api")
     }
 
