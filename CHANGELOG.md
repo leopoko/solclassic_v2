@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.13] - 2026-09-08
+
+### Added
+- Added a `basketBlacklist` config option listing food items that cannot be put into the Basket or the Wicker Basket. Items already inside a basket are never deleted — they can still be taken out, and the Wicker Basket simply skips them when picking the most nutritious food to eat. This is separate from `foodBlacklist`, which excludes items from decay tracking. Requested in #52.
+
+### Fixed
+- Cake now loses hunger recovery like any other food. `CakeBlock.eat()` calls `FoodData.eat(int, float)` directly instead of going through `Player.eat(Level, ItemStack)`, so the `PlayerMixin` redirect never fired and eating cake was neither decayed nor recorded in the food history. Added `CakeBlockMixin` on both platforms. Cake is the only vanilla food block that takes this path — candle cakes go through the same `CakeBlock.eat()`. Reported in #3.
+- Fixed a `NullPointerException` in the Fabric config loader when an array key is missing from an existing `solclassic-server.toml`. `TomlTable#getArray` returns `null` for an absent key, and the previous code called `.toList()` on it before the null check, so adding any new array key would have broken every existing config file on load.
+
+---
+
+## [2.13] - 2026-09-08 (日本語)
+
+### 追加
+- Basket / Wicker Basket に入れられない食べ物を指定する `basketBlacklist` 設定を追加。既にバスケット内にあるアイテムが消えることはなく、取り出しは可能なまま、Wicker Basket の自動選択（最も栄養価の高い食べ物）の対象からのみ除外される。減衰の追跡対象から外す `foodBlacklist` とは目的が異なる別設定。要望: #52。
+
+### 修正
+- ケーキが他の食べ物と同様に満腹度回復量を失うようにした。`CakeBlock.eat()` は `Player.eat(Level, ItemStack)` を経由せず `FoodData.eat(int, float)` を直接呼ぶため、`PlayerMixin` の `@Redirect` が発火せず、減衰も食事履歴への記録も行われていなかった。両プラットフォームに `CakeBlockMixin` を追加。バニラでこの経路を通る食べ物ブロックはケーキのみ（キャンドルケーキも同じ `CakeBlock.eat()` を経由する）。報告: #3。
+- Fabric の設定ローダーで、既存の `solclassic-server.toml` に配列キーが存在しない場合に `NullPointerException` が発生する問題を修正。`TomlTable#getArray` はキーが無いと `null` を返すが、null チェックより前に `.toList()` を呼んでいたため、設定に新しい配列キーを追加すると既存の設定ファイルがすべて読み込めなくなる状態だった。
+
+---
+
+
 ## [2.12] - 2026-09-08
 
 ### Added

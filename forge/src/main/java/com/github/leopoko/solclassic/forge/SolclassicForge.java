@@ -99,6 +99,7 @@ public final class SolclassicForge {
             SolClassicConfigForge.CONFIG.longFoodDecayModifiers.set(defaults.longFoodDecayModifiers);
             SolClassicConfigForge.CONFIG.shortFoodDecayModifiers.set(new ArrayList<>(defaults.shortFoodDecayModifiers));
             SolClassicConfigForge.CONFIG.foodBlacklist.set(new ArrayList<>(defaults.foodBlacklist));
+            SolClassicConfigForge.CONFIG.basketBlacklist.set(new ArrayList<>(defaults.basketBlacklist));
             SolClassicConfigForge.CONFIG.enableWickerBasket.set(defaults.enableWickerBasket);
             SolClassicConfigForge.CONFIG.guaranteeMinimumNutrition.set(defaults.guaranteeMinimumNutrition);
             SolClassicConfigForge.CONFIG.enableTooltip.set(defaults.enableTooltip);

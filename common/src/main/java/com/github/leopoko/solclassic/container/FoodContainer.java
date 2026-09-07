@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.container;
 
+import com.github.leopoko.solclassic.utils.BasketBlacklist;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -27,36 +28,47 @@ public class FoodContainer extends SimpleContainer implements Container, Stacked
     }
 
     /**
+     * バスケットへ新規に収納できるアイテムかどうかを判定します。
+     * 食料であること、WickerBasket自体でないこと、
+     * 設定 basketBlacklist に含まれないことを確認します。
+     */
+    private boolean canAccept(ItemStack stack) {
+        if (!isFood(stack)) return false;
+        // WickerBasket自体をバスケット内に入れることを防止
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (itemId.toString().equals("solclassic:wicker_basket")) return false;
+        // 設定でバスケットへの収納を禁止されたアイテム
+        if (BasketBlacklist.isBlacklisted(stack)) return false;
+        return true;
+    }
+
+    /**
      * バニラのSlot.mayPlace()が呼ぶバリデーション。
      * FoodSlotと同等のチェックをコンテナレベルでも行い、二重の安全策とする。
      */
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (!isFood(stack)) return false;
-        // WickerBasket自体をバスケット内に入れることを防止
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (itemId.toString().equals("solclassic:wicker_basket")) return false;
-        return true;
+        return canAccept(stack);
     }
 
     /**
-     * addItem をオーバーライドして、食料アイテム以外は受け付けないようにします。
+     * addItem をオーバーライドして、収納できないアイテムは受け付けないようにします。
      */
     @Override
     public @NotNull ItemStack addItem(@NotNull ItemStack itemStack) {
-        if (!isFood(itemStack)) {
-            // 食料アイテムでない場合は何もせず、入力されたスタックをそのまま返す
+        if (!canAccept(itemStack)) {
+            // 収納できない場合は何もせず、入力されたスタックをそのまま返す
             return itemStack;
         }
         return super.addItem(itemStack);
     }
 
     /**
-     * canAddItem をオーバーライドして、食料アイテムでない場合は false を返します。
+     * canAddItem をオーバーライドして、収納できないアイテムの場合は false を返します。
      */
     @Override
     public boolean canAddItem(@NotNull ItemStack itemStack) {
-        if (!isFood(itemStack)) {
+        if (!canAccept(itemStack)) {
             return false;
         }
         return super.canAddItem(itemStack);

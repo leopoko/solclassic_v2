@@ -8,7 +8,8 @@
   ],
   "mixins": [
     "PlayerMixinFabric",
-    "LivingEntityMixinFabric"
+    "LivingEntityMixinFabric",
+    "CakeBlockMixinFabric"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Solclassic.MOD_ID,bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -31,6 +32,7 @@ public class SolClassicConfigForge {
         public final ForgeConfigSpec.DoubleValue longFoodDecayModifiers;
         public final ForgeConfigSpec.ConfigValue<List<? extends Double>> shortFoodDecayModifiers;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> basketBlacklist;
         public final ForgeConfigSpec.BooleanValue enableWickerBasket;
         public final ForgeConfigSpec.BooleanValue guaranteeMinimumNutrition;
         public final ForgeConfigSpec.BooleanValue enableTooltip;
@@ -60,6 +62,10 @@ public class SolClassicConfigForge {
             foodBlacklist = builder
                     .comment("List of food items that should not be tracked")
                     .defineList("foodBlacklist", Arrays.asList("minecraft:dried_kelp"), o -> o instanceof String);
+
+            basketBlacklist = builder
+                    .comment("List of food items that cannot be put into the Basket / Wicker Basket. Items already inside can still be taken out.")
+                    .defineList("basketBlacklist", Collections.emptyList(), o -> o instanceof String);
 
             enableWickerBasket = builder
                     .comment("Enable Wicker Basket")

@@ -162,6 +162,7 @@ forge_version=1.20.1-47.4.0
 | `longFoodDecayModifiers` | 0.01 | 0.0-1.0 | 長期減衰係数 |
 | `shortFoodDecayModifiers` | [1.0, 0.9, 0.75, 0.5, 0.05] | — | 短期減衰係数リスト |
 | `foodBlacklist` | ["minecraft:dried_kelp"] | — | 履歴追跡対象外の食べ物 |
+| `basketBlacklist` | [] | — | バスケットへの収納を禁止する食べ物（既に入っている分は取り出せる） |
 | `enableWickerBasket` | true | — | WickerBasket機能の有効/無効 |
 
 ## 開発時の注意事項

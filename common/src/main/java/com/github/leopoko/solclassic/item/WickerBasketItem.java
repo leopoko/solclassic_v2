@@ -5,6 +5,7 @@ import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.container.FoodChestMenu;
 import com.github.leopoko.solclassic.container.FoodContainer;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
+import com.github.leopoko.solclassic.utils.BasketBlacklist;
 import com.github.leopoko.solclassic.utils.FoodCalculator;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
@@ -268,6 +269,11 @@ public class WickerBasketItem extends Item {
             ItemStack itemStack = ItemStack.of(listTag.getCompound(i));
             if (!itemStack.isEmpty()) {
                 if (itemStack.getItem().getFoodProperties() == null) {
+                    continue;
+                }
+                // ブラックリスト追加前からバスケット内に残っているアイテムは
+                // 取り出せる必要があるため削除はせず、自動選択の対象からのみ除外する
+                if (BasketBlacklist.isBlacklisted(itemStack)) {
                     continue;
                 }
                 // Quality Food等のMODによる品質修正を反映した栄養値を取得

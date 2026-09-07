@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import org.tomlj.Toml;
+import org.tomlj.TomlArray;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
@@ -81,16 +82,24 @@ public class SolClassicConfigLoaderFabric {
             }
 
             // shortFoodDecayModifiers は List<Double> として取得（値は Number 型なので変換する）
-            List<Object> rawList = settings.getArray("shortFoodDecayModifiers").toList();
+            List<Object> rawList = getList(settings, "shortFoodDecayModifiers");
             if (rawList != null) {
                 SolclassicConfigData.shortFoodDecayModifiers = rawList.stream()
                         .map(o -> ((Number) o).floatValue())
                         .collect(Collectors.toList());
             }
 
-            List<Object> foodBlacklist = settings.getArray("foodBlacklist").toList();
+            List<Object> foodBlacklist = getList(settings, "foodBlacklist");
             if (foodBlacklist != null) {
                 SolclassicConfigData.foodBlacklist = foodBlacklist.stream()
+                        .map(Object::toString).collect(Collectors.toList());
+            }
+
+            // basketBlacklist は後から追加されたキーのため、既存の設定ファイルには存在しない。
+            // その場合はハードコードデフォルト（空リスト）のままにする。
+            List<Object> basketBlacklist = getList(settings, "basketBlacklist");
+            if (basketBlacklist != null) {
+                SolclassicConfigData.basketBlacklist = basketBlacklist.stream()
                         .map(Object::toString).collect(Collectors.toList());
             }
 
@@ -115,6 +124,20 @@ public class SolClassicConfigLoaderFabric {
      */
     public static void register() {
         ServerLifecycleEvents.SERVER_STARTED.register(SolClassicConfigLoaderFabric::loadConfig);
+    }
+
+    /**
+     * TOML の配列キーを List として取得します。
+     * キーが存在しない、または配列でない場合は null を返します。
+     * TomlTable#getArray はキーが無いと null を返すため、直接 toList() を呼ぶと
+     * NullPointerException になる点に注意（設定へのキー追加時に必ず起きる）。
+     */
+    private static List<Object> getList(TomlTable settings, String key) {
+        if (!settings.isArray(key)) {
+            return null;
+        }
+        TomlArray array = settings.getArray(key);
+        return array == null ? null : array.toList();
     }
 
     private static void recreateDefaultConfig(MinecraftServer server, Path configFile) throws IOException {

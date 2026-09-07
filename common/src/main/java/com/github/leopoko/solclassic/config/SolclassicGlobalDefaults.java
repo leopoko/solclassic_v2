@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,6 +27,7 @@ public class SolclassicGlobalDefaults {
     public double longFoodDecayModifiers = 0.01;
     public List<Double> shortFoodDecayModifiers = Arrays.asList(1.0, 0.9, 0.75, 0.5, 0.05);
     public List<String> foodBlacklist = Arrays.asList("minecraft:dried_kelp");
+    public List<String> basketBlacklist = Collections.emptyList();
     public boolean enableWickerBasket = true;
     public boolean guaranteeMinimumNutrition = false;
     public boolean enableTooltip = true;
@@ -91,6 +93,9 @@ public class SolclassicGlobalDefaults {
                         break;
                     case "foodBlacklist":
                         this.foodBlacklist = parseStringList(value);
+                        break;
+                    case "basketBlacklist":
+                        this.basketBlacklist = parseStringList(value);
                         break;
                     case "enableWickerBasket":
                         this.enableWickerBasket = Boolean.parseBoolean(value);
@@ -175,6 +180,8 @@ public class SolclassicGlobalDefaults {
         sb.append("shortFoodDecayModifiers = ").append(formatDoubleList(defaults.shortFoodDecayModifiers)).append("\n");
         sb.append("#List of food items that should not be tracked\n");
         sb.append("foodBlacklist = ").append(formatStringList(defaults.foodBlacklist)).append("\n");
+        sb.append("#List of food items that cannot be put into the Basket / Wicker Basket. Items already inside can still be taken out.\n");
+        sb.append("basketBlacklist = ").append(formatStringList(defaults.basketBlacklist)).append("\n");
         sb.append("#Enable Wicker Basket\n");
         sb.append("enableWickerBasket = ").append(defaults.enableWickerBasket).append("\n");
         sb.append("#Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.\n");
@@ -202,6 +209,7 @@ public class SolclassicGlobalDefaults {
             defaults.shortFoodDecayModifiers.add(Double.parseDouble(Float.toString(f)));
         }
         defaults.foodBlacklist = new ArrayList<>(SolclassicConfigData.foodBlacklist);
+        defaults.basketBlacklist = new ArrayList<>(SolclassicConfigData.basketBlacklist);
         defaults.enableWickerBasket = SolclassicConfigData.enableWickerBasket;
         defaults.guaranteeMinimumNutrition = SolclassicConfigData.guaranteeMinimumNutrition;
         defaults.enableTooltip = SolclassicConfigData.enableTooltip;

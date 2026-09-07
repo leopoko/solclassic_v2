@@ -20,6 +20,7 @@ public class SolClassicConfigInitForge {
         SolclassicConfigData.shortFoodDecayModifiers = convertedfloatList;
 
         SolclassicConfigData.foodBlacklist = new ArrayList<>(SolClassicConfigForge.CONFIG.foodBlacklist.get());
+        SolclassicConfigData.basketBlacklist = new ArrayList<>(SolClassicConfigForge.CONFIG.basketBlacklist.get());
         SolclassicConfigData.enableWickerBasket = SolClassicConfigForge.CONFIG.enableWickerBasket.get();
         SolclassicConfigData.guaranteeMinimumNutrition = SolClassicConfigForge.CONFIG.guaranteeMinimumNutrition.get();
         SolclassicConfigData.enableTooltip = SolClassicConfigForge.CONFIG.enableTooltip.get();
