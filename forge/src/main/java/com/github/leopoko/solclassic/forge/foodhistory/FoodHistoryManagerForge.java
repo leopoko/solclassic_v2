@@ -1,24 +1,24 @@
 package com.github.leopoko.solclassic.forge.foodhistory;
 
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.LinkedList;
 
 public class FoodHistoryManagerForge {
     private static final String FOOD_HISTORY_TAG = "FoodHistory";
 
     // プレイヤーに食事履歴を保存
-    public static void saveFoodHistory(Player player, LinkedList<ItemStack> foodHistory) {
+    public static void saveFoodHistory(Player player, FoodHistory foodHistory) {
 
         CompoundTag playerData = player.getPersistentData();
         ListTag foodHistoryTag = new ListTag();
 
         // 食べ物履歴をNBTに変換して保存
-        for (ItemStack stack : foodHistory) {
+        for (ItemStack stack : foodHistory.consumedItems) {
             CompoundTag stackTag = new CompoundTag();
             stack.save(stackTag);  // ItemStackをNBTに変換
             foodHistoryTag.add(stackTag);
@@ -29,8 +29,8 @@ public class FoodHistoryManagerForge {
     }
 
     // プレイヤーから食事履歴を読み込む
-    public static LinkedList<ItemStack> loadFoodHistory(Player player) {
-        LinkedList<ItemStack> foodHistory = new LinkedList<>();
+    public static FoodHistory loadFoodHistory(Player player) {
+        FoodHistory foodHistory = new FoodHistory();
         CompoundTag playerData = player.getPersistentData();
 
         // プレイヤーのデータから食事履歴を取得

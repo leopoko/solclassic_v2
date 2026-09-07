@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.network;
 
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -17,7 +18,7 @@ public interface IFoodEventHandler {
      * @param player サーバー側のプレイヤー
      * @return 食事履歴の LinkedList (存在しない場合は新規作成)
      */
-    public LinkedList<ItemStack> getFoodHistory(ServerPlayer player);
+    public FoodHistory getFoodHistory(ServerPlayer player);
 
     /**
      * サーバー側で、指定されたプレイヤーの食事履歴に新しいアイテムを追加します。
@@ -35,7 +36,7 @@ public interface IFoodEventHandler {
      * @param player      クライアント側のプレイヤー
      * @param foodHistory サーバーから送信された食事履歴
      */
-    public void setFoodHistory(Player player, LinkedList<ItemStack> foodHistory);
+    public void setFoodHistory(Player player, FoodHistory foodHistory);
 
     /**
      * サーバー側で、指定されたプレイヤーの食事履歴をリセットします。
@@ -71,7 +72,7 @@ public interface IFoodEventHandler {
      * @param player 対象のプレイヤー（サーバー/クライアントどちらでも可）
      * @return 食事履歴の LinkedList（存在しない場合は空リスト）
      */
-    public LinkedList<ItemStack> getClientFoodHistory(Player player);
+    public FoodHistory getClientFoodHistory(Player player);
 
     /**
      * ItemStackから実効的な栄養値を取得します。

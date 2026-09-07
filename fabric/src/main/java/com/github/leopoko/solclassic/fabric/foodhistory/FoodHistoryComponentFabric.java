@@ -1,6 +1,6 @@
 package com.github.leopoko.solclassic.fabric.foodhistory;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -10,12 +10,12 @@ import java.util.LinkedList;
 
 public class FoodHistoryComponentFabric implements IFoodHistoryComponentFabric {
     private static final String FOOD_HISTORY_TAG = "FoodHistory";
-    private final LinkedList<ItemStack> history = new LinkedList<>();
+    private final FoodHistory history = new FoodHistory();
 
     /**
      * 現在の食事履歴を返します。
      */
-    public LinkedList<ItemStack> getHistory() {
+    public FoodHistory getHistory() {
         return history;
     }
 
@@ -26,12 +26,11 @@ public class FoodHistoryComponentFabric implements IFoodHistoryComponentFabric {
      *
      * @param newHistory 新しい食事履歴
      */
-    public void setFood(LinkedList<ItemStack> newHistory) {
-        LinkedList<ItemStack> copyHistory = new LinkedList<>(newHistory);
-        history.clear();
-        for (ItemStack stack : copyHistory) {
-            history.add(stack.copy());
-        }
+    public void setFood(FoodHistory newHistory) { // I don't think the history change needs to be detached
+        history.amountConsumed.clear();
+        history.amountConsumed.putAll(newHistory.amountConsumed);
+        history.consumedItems.clear();
+        history.consumedItems.addAll(newHistory.consumedItems);
     }
 
     /**
@@ -56,7 +55,7 @@ public class FoodHistoryComponentFabric implements IFoodHistoryComponentFabric {
     @Override
     public void writeToNbt(CompoundTag tag) {
         ListTag listTag = new ListTag();
-        for (ItemStack stack : history) {
+        for (ItemStack stack : history.consumedItems) {
             CompoundTag stackTag = new CompoundTag();
             stack.save(stackTag);
             listTag.add(stackTag);

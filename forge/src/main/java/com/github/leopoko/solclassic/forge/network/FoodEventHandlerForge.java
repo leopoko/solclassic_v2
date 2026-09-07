@@ -1,11 +1,13 @@
 package com.github.leopoko.solclassic.forge.network;
 
 import com.github.leopoko.solclassic.network.IFoodEventHandler;
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +15,7 @@ import java.util.*;
 
 public class FoodEventHandlerForge implements IFoodEventHandler {
     // プレイヤーごとの食事履歴を保存するマップ（キーはプレイヤーのUUID）
-    private static final Map<UUID, LinkedList<ItemStack>> foodHistories = new WeakHashMap<>();
+    private static final Map<UUID, FoodHistory> foodHistories = new WeakHashMap<>();
 
     /**
      * サーバー側で、指定されたプレイヤーの食事履歴を取得します。
@@ -21,8 +23,8 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
      * @param player サーバー側のプレイヤー
      * @return 食事履歴の LinkedList (存在しない場合は新規作成)
      */
-    public LinkedList<ItemStack> getFoodHistory(ServerPlayer player) {
-        return foodHistories.computeIfAbsent(player.getUUID(), uuid -> new LinkedList<>());
+    public FoodHistory getFoodHistory(ServerPlayer player) {
+        return foodHistories.computeIfAbsent(player.getUUID(), uuid -> new FoodHistory());
     }
 
     /**
@@ -33,11 +35,8 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
      * @param foodStack 追加する食事アイテムの ItemStack
      */
     public void addFoodHistory(ServerPlayer player, ItemStack foodStack, int maxHistory) {
-        LinkedList<ItemStack> history = getFoodHistory(player);
-        history.add(foodStack.copy()); // アイテムスタックはコピーして保存
-        if (history.size() > maxHistory) {
-            history.removeFirst();
-        }
+        FoodHistory history = getFoodHistory(player);
+        history.add(foodStack.copy(), maxHistory); // アイテムスタックはコピーして保存
         // オプション：チャットにメッセージを表示
         //player.sendSystemMessage(Component.literal("食事履歴が更新されました"));
     }
@@ -49,7 +48,7 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
      * @param player      クライアント側のプレイヤー
      * @param foodHistory サーバーから送信された食事履歴
      */
-    public void setFoodHistory(Player player, LinkedList<ItemStack> foodHistory) {
+    public void setFoodHistory(Player player, FoodHistory foodHistory) {
         foodHistories.put(player.getUUID(), foodHistory);
         // オプション：チャットにメッセージを表示
         //player.sendSystemMessage(Component.literal("食事履歴が更新されました"));
@@ -67,18 +66,11 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
      * @return 食事履歴内に記録されている、対象アイテムの個数
      */
     public int countFoodEaten(Player player, ItemStack target) {
-        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
+        FoodHistory history = foodHistories.get(player.getUUID());
         if (history == null) {
             return 0;
         }
-        int count = 0;
-        // 対象のアイテムと同じかどうかを getItem() で判定
-        for (ItemStack stack : history) {
-            if (stack.getItem().equals(target.getItem())) {
-                count++;
-            }
-        }
-        return count;
+        return history.getAmountConsumed(target);
     }
 
     /**
@@ -91,7 +83,7 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
      * @return 直近 n 件中に対象アイテムが出現した回数
      */
     public int countFoodEatenRecent(Player player, ItemStack target, int n) {
-        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
+        LinkedList<ItemStack> history = foodHistories.get(player.getUUID()).consumedItems;
         if (history == null || history.isEmpty()) {
             return 0;
         }
@@ -108,9 +100,9 @@ public class FoodEventHandlerForge implements IFoodEventHandler {
     }
 
     @Override
-    public LinkedList<ItemStack> getClientFoodHistory(Player player) {
-        LinkedList<ItemStack> history = foodHistories.get(player.getUUID());
-        return history != null ? history : new LinkedList<>();
+    public FoodHistory getClientFoodHistory(Player player) {
+        FoodHistory history = foodHistories.get(player.getUUID());
+        return history != null ? history : new FoodHistory();
     }
 
     /**
