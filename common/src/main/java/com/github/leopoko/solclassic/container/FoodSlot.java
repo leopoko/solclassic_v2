@@ -1,5 +1,6 @@
 package com.github.leopoko.solclassic.container;
 
+import com.github.leopoko.solclassic.utils.BasketBlacklist;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,10 @@ public class FoodSlot extends Slot {
 
 
         if (itemId.toString().equals("solclassic:wicker_basket")) {
+            isEdible = false;
+        }
+        // 設定でバスケットへの収納を禁止されたアイテムは受け付けない
+        if (BasketBlacklist.isBlacklisted(stack)) {
             isEdible = false;
         }
         return isEdible;

@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.15+1.21.1] - 2026-09-08
+
+### Added
+- Ported the `basketBlacklist` setting from the 1.20.1 branch. Food items listed here cannot be put into the Basket or the Wicker Basket, and are skipped by the Wicker Basket's automatic food selection. This is a separate setting from `foodBlacklist`, which excludes items from decay tracking. The check is only applied on the paths that put *new* items in (`FoodSlot.mayPlace()`, `FoodContainer.canPlaceItem()`/`addItem()`/`canAddItem()`), never on `FoodContainer.setItem()`, so items already inside a basket can still be taken out after an item is added to the blacklist. On NeoForge the value is declared with `defineListAllowEmpty` rather than `defineList`, because `defineList` binds a `NON_EMPTY` (>= 1) size range that does not fit a setting whose default is an empty list. Requested in #52.
+- Ported the Chinese (`zh_cn`) localization from the 1.20.1 branch.
+
+### Fixed
+- Fixed cake not being subject to food decay and not being recorded in the food history. `CakeBlock.eat()` does not go through `Player.eat(Level, ItemStack, FoodProperties)`; it calls `FoodData.eat(int, float)` directly, so `PlayerMixin`'s `@Redirect` never fired. Added `CakeBlockMixin` on both platforms with the shared logic in `CakeEatHandler`. Candle cakes go through the same `CakeBlock.eat()` and are covered as well. Reported in #3.
+- Fixed items disappearing from a Basket after roughly three stacks were inserted. The menu was opened with the vanilla `MenuType.GENERIC_9x1`, so the client built a vanilla `ChestMenu` + `SimpleContainer` with no food validation while the server used `FoodChestMenu` + `FoodContainer` + `FoodSlot`. The mismatch desynced slot contents. Registered a custom `MenuType` (`solclassic:food_chest`) via Architectury's `MenuRegistry.ofExtended()` so both sides build the same menu, and added the missing `FoodContainer.canPlaceItem()` override. Reported in #51.
+
+### Changed
+- Ported the consumption-count cache from the 1.20.1 branch. Food history is now held in a `FoodHistory` object that keeps a `Map<Item, Integer>` counter alongside the queue, making the total-count lookup used by long-term decay O(1) instead of a linear scan of up to 300 entries. `IFoodEventHandler` now passes `FoodHistory` instead of `LinkedList<ItemStack>`.
+
+---
+
+## [2.15+1.21.1] - 2026-09-08 (日本語)
+
+### 追加
+- 1.20.1 ブランチから `basketBlacklist` 設定を移植。ここに列挙した食べ物は Basket / Wicker Basket に入れられなくなり、Wicker Basket の自動選択の対象からも外れる。減衰の追跡対象から外す `foodBlacklist` とは目的が異なる別設定。判定は「新規に入れる」経路 (`FoodSlot.mayPlace()`、`FoodContainer.canPlaceItem()`/`addItem()`/`canAddItem()`) だけに入れ、`FoodContainer.setItem()` には入れていない。NBT からの復元がこの経路を通るため、後からブラックリストに追加しても既存バスケットの中身は消えず、取り出せる。NeoForge 側は `defineList` ではなく `defineListAllowEmpty` を使用。`defineList` はサイズレンジに `NON_EMPTY` (1以上) を割り当てるため、デフォルトが空リストのこの設定には合わないため。要望: #52。
+- 1.20.1 ブランチから中国語 (`zh_cn`) ローカライズを移植。
+
+### 修正
+- ケーキだけ減衰も食事履歴への記録も行われていなかった問題を修正。`CakeBlock.eat()` は `Player.eat(Level, ItemStack, FoodProperties)` を経由せず `FoodData.eat(int, float)` を直接呼ぶため、`PlayerMixin` の `@Redirect` が発火していなかった。両プラットフォームに `CakeBlockMixin` を追加し、共通処理を `CakeEatHandler` に切り出した。キャンドルケーキも同じ `CakeBlock.eat()` を経由するため対応済み。報告: #3。
+- Basket に3個程度アイテムを入れると他のアイテムが消える問題を修正。メニューをバニラの `MenuType.GENERIC_9x1` で開いていたため、クライアント側は食べ物バリデーションを持たないバニラの `ChestMenu` + `SimpleContainer` を生成し、サーバー側は `FoodChestMenu` + `FoodContainer` + `FoodSlot` を使う不一致が生じ、スロットの内容がずれていた。Architectury の `MenuRegistry.ofExtended()` でカスタム `MenuType` (`solclassic:food_chest`) を登録し、両サイドが同じメニューを構築するようにした。あわせて未実装だった `FoodContainer.canPlaceItem()` のオーバーライドを追加。報告: #51。
+
+### 変更
+- 1.20.1 ブランチから消費回数キャッシュを移植。食事履歴をキューと `Map<Item, Integer>` のカウンタを併せ持つ `FoodHistory` で保持するようにし、長期減衰で使う総出現回数の取得を最大300件の線形走査から O(1) に変更した。`IFoodEventHandler` の受け渡しは `LinkedList<ItemStack>` から `FoodHistory` に変わっている。
+
+---
+
 ## [2.14+1.21.1] - 2026-09-08
 
 ### Fixed

@@ -2,15 +2,13 @@ package com.github.leopoko.solclassic.neoforge.foodhistory;
 
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import com.github.leopoko.solclassic.network.FoodHistorySync;
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-
-import java.util.LinkedList;
 
 @EventBusSubscriber()
 public class PlayerDataHandlerNeoForge {
@@ -21,7 +19,7 @@ public class PlayerDataHandlerNeoForge {
         Player newPlayer = event.getEntity();
 
         // 食事履歴を引き継ぐ
-        LinkedList<ItemStack> originalHistory = FoodHistoryManagerNeoForge.loadFoodHistory(originalPlayer);
+        FoodHistory originalHistory = FoodHistoryManagerNeoForge.loadFoodHistory(originalPlayer);
         FoodHistoryManagerNeoForge.saveFoodHistory(newPlayer, originalHistory);
     }
 
@@ -29,7 +27,7 @@ public class PlayerDataHandlerNeoForge {
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
-        LinkedList<ItemStack> foodHistory = FoodHistoryHolder.INSTANCE.getFoodHistory((ServerPlayer) player);
+        FoodHistory foodHistory = FoodHistoryHolder.INSTANCE.getFoodHistory((ServerPlayer) player);
 
         // 食事履歴をNBTに保存
         FoodHistoryManagerNeoForge.saveFoodHistory((ServerPlayer) player, foodHistory);
@@ -41,7 +39,7 @@ public class PlayerDataHandlerNeoForge {
         ServerPlayer player = (ServerPlayer) event.getEntity();
 
         // NBTから食事履歴を読み込む
-        LinkedList<ItemStack> foodHistory = FoodHistoryManagerNeoForge.loadFoodHistory(player);
+        FoodHistory foodHistory = FoodHistoryManagerNeoForge.loadFoodHistory(player);
         FoodHistoryHolder.INSTANCE.setFoodHistory(player, foodHistory);
 
         // サーバーからクライアントにパケットを送信して履歴を同期する

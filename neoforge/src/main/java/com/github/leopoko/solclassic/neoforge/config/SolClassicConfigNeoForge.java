@@ -4,6 +4,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SolClassicConfigNeoForge {
@@ -23,6 +24,7 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.DoubleValue longFoodDecayModifiers;
         public final ModConfigSpec.ConfigValue<List<? extends Double>> shortFoodDecayModifiers;
         public final ModConfigSpec.ConfigValue<List<? extends String>> foodBlacklist;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> basketBlacklist;
         public final ModConfigSpec.BooleanValue enableWickerBasket;
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
         public final ModConfigSpec.BooleanValue enableTooltip;
@@ -62,6 +64,15 @@ public class SolClassicConfigNeoForge {
             foodBlacklist = builder
                     .comment("List of food items that should not be tracked")
                     .defineList("foodBlacklist", Arrays.asList("minecraft:dried_kelp"), o -> o instanceof String);
+
+            // defineList はサイズレンジに NON_EMPTY (1以上) を割り当てるため、
+            // デフォルトが空リストのこの設定では defineListAllowEmpty を使う。
+            basketBlacklist = builder
+                    .comment("List of food items that cannot be put into the Basket / Wicker Basket. Items already inside can still be taken out.")
+                    .defineListAllowEmpty("basketBlacklist",
+                            () -> Collections.<String>emptyList(),
+                            () -> "minecraft:cake",
+                            o -> o instanceof String);
 
             enableWickerBasket = builder
                     .comment("Enable Wicker Basket")

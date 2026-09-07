@@ -1,20 +1,18 @@
 package com.github.leopoko.solclassic.fabric.foodhistory;
 
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.LinkedList;
 
 public interface IFoodHistoryComponentFabric extends Component, AutoSyncedComponent {
     /**
-     * 現在の食事履歴（ItemStack の LinkedList）を返す
+     * 現在の食事履歴を返す
      */
-    LinkedList<ItemStack> getHistory();
+    FoodHistory getHistory();
 
     /**
      * 渡された食事履歴で内部データを上書きする
      * @param newHistory 外部から渡された食事履歴
      */
-    void setFood(LinkedList<ItemStack> newHistory);
+    void setFood(FoodHistory newHistory);
 }

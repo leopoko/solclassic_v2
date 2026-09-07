@@ -117,6 +117,16 @@ public class SolClassicConfigLoaderFabric {
                 }
             }
 
+            // basketBlacklist は後から追加されたキーのため、既存の設定ファイルには存在しない。
+            // その場合はハードコードデフォルト（空リスト）のままにする。
+            if (settings.getArray("basketBlacklist") != null) {
+                List<Object> basketBlacklist = settings.getArray("basketBlacklist").toList();
+                if (basketBlacklist != null) {
+                    SolclassicConfigData.basketBlacklist = basketBlacklist.stream()
+                            .map(Object::toString).collect(Collectors.toList());
+                }
+            }
+
             server.sendSystemMessage(Component.literal("[SolClassic] Config loaded successfully."));
 
         } catch (Exception e) {

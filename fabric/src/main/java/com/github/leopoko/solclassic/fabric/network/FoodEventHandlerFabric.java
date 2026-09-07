@@ -2,6 +2,7 @@ package com.github.leopoko.solclassic.fabric.network;
 
 import com.github.leopoko.solclassic.fabric.foodhistory.IFoodHistoryComponentFabric;
 import com.github.leopoko.solclassic.network.IFoodEventHandler;
+import com.github.leopoko.solclassic.utils.FoodHistory;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -12,17 +13,16 @@ import static com.github.leopoko.solclassic.fabric.foodhistory.FoodHistoryCompon
 
 public class FoodEventHandlerFabric  implements IFoodEventHandler {
     // プレイヤーごとの食事履歴を保存するマップ（キーはプレイヤーのUUID）
-    private static final Map<UUID, LinkedList<ItemStack>> foodHistories = new WeakHashMap<>();
+    private static final Map<UUID, FoodHistory> foodHistories = new WeakHashMap<>();
 
     /**
      * サーバー側で、指定されたプレイヤーの食事履歴を取得します。
      *
      * @param player サーバー側のプレイヤー
-     * @return 食事履歴の LinkedList (存在しない場合は新規作成)
+     * @return 食事履歴 (存在しない場合は新規作成)
      */
-    public LinkedList<ItemStack> getFoodHistory(ServerPlayer player) {
-        LinkedList<ItemStack> history_ = FOOD_HISTORY.get(player).getHistory();
-        return history_;
+    public FoodHistory getFoodHistory(ServerPlayer player) {
+        return FOOD_HISTORY.get(player).getHistory();
     }
 
     /**
@@ -33,12 +33,10 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @param foodStack 追加する食事アイテムの ItemStack
      */
     public void addFoodHistory(ServerPlayer player, ItemStack foodStack, int maxHistory) {
-        LinkedList<ItemStack> history = getFoodHistory(player);
-        history.add(foodStack.copy()); // アイテムスタックはコピーして保存
-        if (history.size() > maxHistory) {
-            history.removeFirst();
-        }
-        FOOD_HISTORY.get(player).setFood(history);
+        // getHistory() が返すのはコンポーネント内部の実体なので、その場で更新すればよい。
+        // setFood() に自分自身を渡すと自己代入になるため呼ばない。
+        FoodHistory history = getFoodHistory(player);
+        history.add(foodStack.copy(), maxHistory); // アイテムスタックはコピーして保存
     }
 
     /**
@@ -47,14 +45,14 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @param player      クライアント側のプレイヤー
      * @param foodHistory サーバーから送信された食事履歴
      */
-    public void setFoodHistory(Player player, LinkedList<ItemStack> foodHistory) {
+    public void setFoodHistory(Player player, FoodHistory foodHistory) {
         foodHistories.put(player.getUUID(), foodHistory);
         FOOD_HISTORY.get(player).setFood(foodHistory);
     }
 
     public void resetFoodHistory(Player player) {
         foodHistories.remove(player.getUUID());
-        FOOD_HISTORY.get(player).setFood(new LinkedList<>());
+        FOOD_HISTORY.get(player).setFood(new FoodHistory());
     }
 
     /**
@@ -65,18 +63,15 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @return 食事履歴内に記録されている、対象アイテムの個数
      */
     public int countFoodEaten(Player player, ItemStack target) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
+        if (player == null) {
+            return 0;
+        }
+        FoodHistory history = FOOD_HISTORY.get(player).getHistory();
         if (history == null) {
             return 0;
         }
-        int count = 0;
-        // 対象のアイテムと同じかどうかを getItem() で判定
-        for (ItemStack stack : history) {
-            if (stack.getItem().equals(target.getItem())) {
-                count++;
-            }
-        }
-        return count;
+        // 消費回数キャッシュから O(1) で取得する
+        return history.getAmountConsumed(target);
     }
 
     /**
@@ -89,14 +84,18 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
      * @return 直近 n 件中に対象アイテムが出現した回数
      */
     public int countFoodEatenRecent(Player player, ItemStack target, int n) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
-        if (history == null || history.isEmpty()) {
+        if (player == null) {
+            return 0;
+        }
+        // consumedItems を参照する前に FoodHistory 自体の null を判定する
+        FoodHistory history = FOOD_HISTORY.get(player).getHistory();
+        if (history == null || history.consumedItems.isEmpty()) {
             return 0;
         }
         int count = 0;
         int processed = 0;
         // 最新の履歴から逆順に n 件分だけ走査
-        for (Iterator<ItemStack> iterator = history.descendingIterator(); iterator.hasNext() && processed < n; processed++) {
+        for (Iterator<ItemStack> iterator = history.consumedItems.descendingIterator(); iterator.hasNext() && processed < n; processed++) {
             ItemStack stack = iterator.next();
             if (stack.getItem().equals(target.getItem())) {
                 count++;
@@ -106,8 +105,11 @@ public class FoodEventHandlerFabric  implements IFoodEventHandler {
     }
 
     @Override
-    public LinkedList<ItemStack> getClientFoodHistory(Player player) {
-        LinkedList<ItemStack> history = FOOD_HISTORY.get(player).getHistory();
-        return history != null ? history : new LinkedList<>();
+    public FoodHistory getClientFoodHistory(Player player) {
+        if (player == null) {
+            return new FoodHistory();
+        }
+        FoodHistory history = FOOD_HISTORY.get(player).getHistory();
+        return history != null ? history : new FoodHistory();
     }
 }

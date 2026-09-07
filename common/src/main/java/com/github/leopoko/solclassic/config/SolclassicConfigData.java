@@ -1,6 +1,7 @@
 package com.github.leopoko.solclassic.config;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SolclassicConfigData {
@@ -10,6 +11,9 @@ public class SolclassicConfigData {
     public static List<Float> shortFoodDecayModifiers = Arrays.asList(1.0F, 0.9F, 0.75F, 0.5F, 0.05F);
     // Items that will not be affected by food history tracking
     public static List<String> foodBlacklist = Arrays.asList("minecraft:dried_kelp");
+    // バスケット（Basket / Wicker Basket）に入れることを禁止するアイテム。
+    // 既にバスケット内にあるものは取り出せるが、新たに入れることはできない。
+    public static List<String> basketBlacklist = Collections.emptyList();
     public static boolean enableWickerBasket = true;
     // 満腹度回復率が0%の食べ物に最低限1の回復を保証するかどうか
     public static boolean guaranteeMinimumNutrition = false;

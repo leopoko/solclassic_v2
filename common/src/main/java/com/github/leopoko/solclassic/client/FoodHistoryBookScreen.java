@@ -63,7 +63,7 @@ public class FoodHistoryBookScreen extends Screen {
      * 最近食べた順にソートし、各食べ物の回数と減衰率を計算する。
      */
     private List<FoodEntry> buildFoodEntries() {
-        LinkedList<ItemStack> history = FoodHistoryHolder.INSTANCE.getClientFoodHistory(player);
+        LinkedList<ItemStack> history = FoodHistoryHolder.INSTANCE.getClientFoodHistory(player).consumedItems;
         if (history == null || history.isEmpty()) {
             return Collections.emptyList();
         }

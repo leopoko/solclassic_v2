@@ -1,12 +1,15 @@
 package com.github.leopoko.solclassic.utils;
 
+import com.github.leopoko.solclassic.Solclassic;
 import com.github.leopoko.solclassic.client.FoodHistoryBookScreen;
 import com.github.leopoko.solclassic.config.SolclassicConfigData;
 import com.github.leopoko.solclassic.item.FoodHistoryBookItem;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
 import com.github.leopoko.solclassic.network.FoodHistoryHolder;
 import dev.architectury.event.events.client.ClientTooltipEvent;
+import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -21,6 +24,9 @@ import java.util.List;
 
 public class ClientTooltipHandler {
     public static void init() {
+        // カスタムMenuTypeのスクリーンファクトリを登録（ChestMenuのContainerScreenを使用）
+        MenuRegistry.registerScreenFactory(Solclassic.FOOD_CHEST_MENU_TYPE, ContainerScreen::new);
+
         // クライアント環境でのみFoodHistoryBookItemの画面オープン処理を登録
         FoodHistoryBookItem.screenOpener = FoodHistoryBookScreen::open;
 

@@ -20,6 +20,7 @@ public class SolClassicConfigInitNeoForge {
         SolclassicConfigData.shortFoodDecayModifiers = convertedfloatList;
 
         SolclassicConfigData.foodBlacklist = new ArrayList<>(SolClassicConfigNeoForge.CONFIG.foodBlacklist.get());
+        SolclassicConfigData.basketBlacklist = new ArrayList<>(SolClassicConfigNeoForge.CONFIG.basketBlacklist.get());
         SolclassicConfigData.enableWickerBasket = SolClassicConfigNeoForge.CONFIG.enableWickerBasket.get();
         SolclassicConfigData.guaranteeMinimumNutrition = SolClassicConfigNeoForge.CONFIG.guaranteeMinimumNutrition.get();
         SolclassicConfigData.enableTooltip = SolClassicConfigNeoForge.CONFIG.enableTooltip.get();
