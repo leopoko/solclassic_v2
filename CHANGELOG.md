@@ -3,10 +3,18 @@
 ## [2.13] - 2026-09-08
 
 ### Added
+- Added Chinese (zh_cn) localization. Thanks to [@pyf6trb](https://github.com/pyf6trb) (#53).
 - Added a `basketBlacklist` config option listing food items that cannot be put into the Basket or the Wicker Basket. Items already inside a basket are never deleted — they can still be taken out, and the Wicker Basket simply skips them when picking the most nutritious food to eat. This is separate from `foodBlacklist`, which excludes items from decay tracking. Requested in #52.
+
+### Changed
+- Food history now caches per-item consumption counts in a `Map<Item, Integer>` alongside the `ItemStack` queue, so `countFoodEaten()` (used by the long-term decay calculation) is O(1) instead of scanning the whole history. Thanks to [@DaPlumer](https://github.com/DaPlumer) (#55).
 
 ### Fixed
 - Cake now loses hunger recovery like any other food. `CakeBlock.eat()` calls `FoodData.eat(int, float)` directly instead of going through `Player.eat(Level, ItemStack)`, so the `PlayerMixin` redirect never fired and eating cake was neither decayed nor recorded in the food history. Added `CakeBlockMixin` on both platforms. Cake is the only vanilla food block that takes this path — candle cakes go through the same `CakeBlock.eat()`. Reported in #3.
+- Fixed a `NullPointerException` in `FoodEventHandlerForge.countFoodEatenRecent()` that dereferenced `.consumedItems` before the null check. Running `/resetfoodhistory` removes the map entry without re-syncing, so the next meal crashed on Forge.
+- Restored the defensive copy in `FoodHistoryComponentFabric.setFood()` and added a self-assignment guard. Without it, calling `setFood()` with the component's own history would `clear()` it and wipe the player's food history.
+- `FoodHistory` no longer throws `IllegalStateException` when the queue and the count cache disagree. It now logs the inconsistency and rebuilds the cache instead of crashing inside `Player.eat()`.
+- Fixed `FoodHistory.toString()` using the `%b` format specifier, which printed `true` instead of the actual contents in diagnostic logs.
 - Fixed a `NullPointerException` in the Fabric config loader when an array key is missing from an existing `solclassic-server.toml`. `TomlTable#getArray` returns `null` for an absent key, and the previous code called `.toList()` on it before the null check, so adding any new array key would have broken every existing config file on load.
 
 ---
@@ -14,47 +22,21 @@
 ## [2.13] - 2026-09-08 (日本語)
 
 ### 追加
-- Basket / Wicker Basket に入れられない食べ物を指定する `basketBlacklist` 設定を追加。既にバスケット内にあるアイテムが消えることはなく、取り出しは可能なまま、Wicker Basket の自動選択（最も栄養価の高い食べ物）の対象からのみ除外される。減衰の追跡対象から外す `foodBlacklist` とは目的が異なる別設定。要望: #52。
-
-### 修正
-- ケーキが他の食べ物と同様に満腹度回復量を失うようにした。`CakeBlock.eat()` は `Player.eat(Level, ItemStack)` を経由せず `FoodData.eat(int, float)` を直接呼ぶため、`PlayerMixin` の `@Redirect` が発火せず、減衰も食事履歴への記録も行われていなかった。両プラットフォームに `CakeBlockMixin` を追加。バニラでこの経路を通る食べ物ブロックはケーキのみ（キャンドルケーキも同じ `CakeBlock.eat()` を経由する）。報告: #3。
-- Fabric の設定ローダーで、既存の `solclassic-server.toml` に配列キーが存在しない場合に `NullPointerException` が発生する問題を修正。`TomlTable#getArray` はキーが無いと `null` を返すが、null チェックより前に `.toList()` を呼んでいたため、設定に新しい配列キーを追加すると既存の設定ファイルがすべて読み込めなくなる状態だった。
-
----
-
-
-## [2.12] - 2026-09-08
-
-### Added
-- Added Chinese (zh_cn) localization. Thanks to [@pyf6trb](https://github.com/pyf6trb) (#53).
-
-### Changed
-- Food history now caches per-item consumption counts in a `Map<Item, Integer>` alongside the `ItemStack` queue, so `countFoodEaten()` (used by the long-term decay calculation) is O(1) instead of scanning the whole history. Thanks to [@DaPlumer](https://github.com/DaPlumer) (#55).
-
-### Fixed
-- Fixed a `NullPointerException` in `FoodEventHandlerForge.countFoodEatenRecent()` that dereferenced `.consumedItems` before the null check. Running `/resetfoodhistory` removes the map entry without re-syncing, so the next meal crashed on Forge.
-- Restored the defensive copy in `FoodHistoryComponentFabric.setFood()` and added a self-assignment guard. Without it, calling `setFood()` with the component's own history would `clear()` it and wipe the player's food history.
-- `FoodHistory` no longer throws `IllegalStateException` when the queue and the count cache disagree. It now logs the inconsistency and rebuilds the cache instead of crashing inside `Player.eat()`.
-- Fixed `FoodHistory.toString()` using the `%b` format specifier, which printed `true` instead of the actual contents in diagnostic logs.
-
----
-
-## [2.12] - 2026-09-08 (日本語)
-
-### 追加
 - 中国語 (zh_cn) のローカライズを追加。[@pyf6trb](https://github.com/pyf6trb) さんによる貢献 (#53)。
+- Basket / Wicker Basket に入れられない食べ物を指定する `basketBlacklist` 設定を追加。既にバスケット内にあるアイテムが消えることはなく、取り出しは可能なまま、Wicker Basket の自動選択（最も栄養価の高い食べ物）の対象からのみ除外される。減衰の追跡対象から外す `foodBlacklist` とは目的が異なる別設定。要望: #52。
 
 ### 変更
 - 食事履歴に、`ItemStack` のキューに加えてアイテムごとの消費回数キャッシュ (`Map<Item, Integer>`) を保持するようにした。これにより長期減衰の計算で使う `countFoodEaten()` が履歴全体の走査 (O(n)) から O(1) になった。[@DaPlumer](https://github.com/DaPlumer) さんによる貢献 (#55)。
 
 ### 修正
+- ケーキが他の食べ物と同様に満腹度回復量を失うようにした。`CakeBlock.eat()` は `Player.eat(Level, ItemStack)` を経由せず `FoodData.eat(int, float)` を直接呼ぶため、`PlayerMixin` の `@Redirect` が発火せず、減衰も食事履歴への記録も行われていなかった。両プラットフォームに `CakeBlockMixin` を追加。バニラでこの経路を通る食べ物ブロックはケーキのみ（キャンドルケーキも同じ `CakeBlock.eat()` を経由する）。報告: #3。
 - `FoodEventHandlerForge.countFoodEatenRecent()` で null チェックより前に `.consumedItems` を参照していた `NullPointerException` を修正。`/resetfoodhistory` はマップのエントリを削除するだけで再同期しないため、リセット直後に食事すると Forge 側でクラッシュしていた。
 - `FoodHistoryComponentFabric.setFood()` の防御的コピーを復活させ、自己代入ガードを追加。コンポーネント自身の履歴を `setFood()` に渡すと `clear()` によって食事履歴が全消去される状態だった。
 - キューと消費回数キャッシュが不整合になったときに `FoodHistory` が `IllegalStateException` を投げるのをやめた。`Player.eat()` の内部でクラッシュする代わりに、ログを出してキャッシュを再構築する。
 - `FoodHistory.toString()` が書式指定子に `%b` を使っており、診断ログに内容ではなく `true` と出力されていた問題を修正。
+- Fabric の設定ローダーで、既存の `solclassic-server.toml` に配列キーが存在しない場合に `NullPointerException` が発生する問題を修正。`TomlTable#getArray` はキーが無いと `null` を返すが、null チェックより前に `.toList()` を呼んでいたため、設定に新しい配列キーを追加すると既存の設定ファイルがすべて読み込めなくなる状態だった。
 
 ---
-
 
 ## [2.11] - 2026-03-19
 
