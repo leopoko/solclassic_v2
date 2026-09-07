@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.13+1.21.1] - 2026-08-27
+
+### Fixed
+- Fixed a remaining gap in the v2.12+1.21.1 config fix: `SolClassicConfigLoaderFabric.loadConfig()` still read numeric keys with `TomlTable#getLong`/`getDouble`, which throw `TomlInvalidTypeException` (not return `null`) when a TOML value's literal type doesn't strictly match (e.g. writing `longFoodDecayModifiers = 1` instead of `1.0`, which TOML parses as an integer, not a float). v2.12's broader `catch (Exception e)` means this no longer fails silently or crashes, but the exception still aborts the method before *any* value - scalar or array - gets applied, so a single malformed numeric key still discards a config edit the same way it did before. Added a `getNumber()` helper that reads the raw `Number` and coerces via `doubleValue()`/`longValue()` regardless of which TOML numeric literal style was used.
+
+---
+
+## [2.13+1.21.1] - 2026-08-27 (日本語)
+
+### 修正
+- v2.12+1.21.1 の設定修正で残っていたギャップを修正: `SolClassicConfigLoaderFabric.loadConfig()` は依然として `TomlTable#getLong`/`getDouble` で数値キーを取得しており、TOML リテラル型が期待した型と厳密に一致しない場合(例: `longFoodDecayModifiers = 1` のように整数リテラルで書いてしまい、TOML的に Long と解釈された場合)、`null` ではなく `TomlInvalidTypeException` を投げる。v2.12 で `catch (Exception e)` の範囲が広がったため無反応・クラッシュにはならなくなったが、依然としてこの例外発生時点でメソッドが中断し、スカラー値・配列値ともに一切適用されないまま終わる点は変わっていなかった。TOML リテラルが整数・浮動小数点数のどちらで書かれていても `doubleValue()`/`longValue()` で吸収する `getNumber()` ヘルパーを追加した。
+
+---
+
 ## [2.12+1.21.1] - 2026-05-01
 
 ### Fixed

@@ -61,9 +61,16 @@ public class SolClassicConfigLoaderFabric {
             }
 
             // 各値を取得（null の場合は再作成する）
-            Long maxFoodHistoryVal = settings.getLong("maxFoodHistorySize");
-            Long maxShortFoodHistoryVal = settings.getLong("maxShortFoodHistorySize");
-            Double longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
+            // getLong/getDouble は TOML の値が期待した型と厳密に一致しない場合
+            // （例: "1" のような整数リテラルを longFoodDecayModifiers に書いた場合）
+            // null ではなく TomlInvalidTypeException を投げる。catch (Exception e) 自体は
+            // 既にあるため起動クラッシュや完全な無反応にはならないが、例外発生時点で
+            // メソッドが中断し、スカラー値も配列値も一切適用されないままになる
+            // （＝有効な他の設定まで巻き込まれて無視される）。getNumber() 経由で
+            // 数値型を許容してから doubleValue()/longValue() で変換し、この経路自体を防ぐ。
+            Long maxFoodHistoryVal = toLong(getNumber(settings, "maxFoodHistorySize"));
+            Long maxShortFoodHistoryVal = toLong(getNumber(settings, "maxShortFoodHistorySize"));
+            Double longFoodDecayModifiersVal = toDouble(getNumber(settings, "longFoodDecayModifiers"));
             Boolean enableWickerBasket = settings.getBoolean("enableWickerBasket");
             Boolean guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
             Boolean enableTooltip = settings.getBoolean("enableTooltip");
@@ -74,9 +81,9 @@ public class SolClassicConfigLoaderFabric {
                 recreateDefaultConfig(server, configFile);
                 result = Toml.parse(configFile);
                 settings = result.getTable("SolClassicSettings");
-                maxFoodHistoryVal = settings.getLong("maxFoodHistorySize");
-                maxShortFoodHistoryVal = settings.getLong("maxShortFoodHistorySize");
-                longFoodDecayModifiersVal = settings.getDouble("longFoodDecayModifiers");
+                maxFoodHistoryVal = toLong(getNumber(settings, "maxFoodHistorySize"));
+                maxShortFoodHistoryVal = toLong(getNumber(settings, "maxShortFoodHistorySize"));
+                longFoodDecayModifiersVal = toDouble(getNumber(settings, "longFoodDecayModifiers"));
                 enableWickerBasket = settings.getBoolean("enableWickerBasket");
                 guaranteeMinimumNutrition = settings.getBoolean("guaranteeMinimumNutrition");
                 enableTooltip = settings.getBoolean("enableTooltip");
@@ -133,5 +140,23 @@ public class SolClassicConfigLoaderFabric {
         String content = SolclassicGlobalDefaults.generateConfigContent(defaults);
         Files.writeString(configFile, content, StandardCharsets.UTF_8);
         server.sendSystemMessage(Component.literal("Default config recreated at: " + configFile));
+    }
+
+    /**
+     * TOML の数値キーを Number として取得します。
+     * TomlTable#getDouble/getLong は値が期待した型(Double/Long)と厳密に一致しない場合、
+     * null を返さずに TomlInvalidTypeException を投げるため直接は使いません。
+     */
+    private static Number getNumber(TomlTable settings, String key) {
+        Object value = settings.get(key);
+        return value instanceof Number number ? number : null;
+    }
+
+    private static Long toLong(Number number) {
+        return number == null ? null : number.longValue();
+    }
+
+    private static Double toDouble(Number number) {
+        return number == null ? null : number.doubleValue();
     }
 }
