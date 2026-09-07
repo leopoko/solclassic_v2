@@ -128,6 +128,11 @@ publishMods {
         projectSlug = "foodvariations"
         minecraftVersions.add("1.21.1")
         javaVersions.add(JavaVersion.VERSION_21)
+        // CurseForge は環境グループ (Client/Server) の指定を必須とする。
+        // 未指定だとアップロードが 400 で拒否される。
+        // 減衰計算はサーバー側、ツールチップとバスケットUIはクライアント側にあるため両方必要。
+        clientRequired = true
+        serverRequired = true
         requires("architectury-api")
     }
 
