@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.14+1.21.1] - 2026-09-08
+
+### Fixed
+- Fixed the Basket, Wicker Basket and Food History Book having no craftable recipes in game since the 1.21.1 port. Minecraft 1.21 singularized the data pack directory names (`recipes` -> `recipe`, `advancements` -> `advancement`, `loot_tables` -> `loot_table`), but the mod still shipped its recipes under `data/solclassic/recipes/`, so `RecipeManager` never loaded them. Renamed the directory to `data/solclassic/recipe/`. The recipe JSON itself was already in the 1.21 format (`"result": {"id": ...}`) and is unchanged. Reported in #54.
+
+---
+
+## [2.14+1.21.1] - 2026-09-08 (日本語)
+
+### 修正
+- 1.21.1 移植以降、Basket / Wicker Basket / Food History Book のレシピがゲーム内に存在しなかった問題を修正。Minecraft 1.21 でデータパックのディレクトリ名が単数形化された (`recipes` → `recipe`、`advancements` → `advancement`、`loot_tables` → `loot_table`) にもかかわらず、MOD 側は `data/solclassic/recipes/` のままレシピを同梱していたため、`RecipeManager` に一切読み込まれていなかった。ディレクトリ名を `data/solclassic/recipe/` に変更。レシピ JSON 自体は既に 1.21 形式 (`"result": {"id": ...}`) になっており変更なし。報告: #54。
+
+---
+
+
 ## [2.13+1.21.1] - 2026-08-27
 
 ### Fixed
