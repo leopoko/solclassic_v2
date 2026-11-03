@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.16+1.21.1] - 2026-11-03
+
+### Added
+- Added a `preventEatingFullyDecayedFood` config option (default: `true`). Food whose hunger recovery has decayed to 0 can no longer be eaten, so items like golden apples cannot be eaten over and over just for their effects. The check runs on right-click on both sides and shows an action-bar message. Blacklisted foods, creative mode, foods that never restore hunger, and `guaranteeMinimumNutrition = true` are unaffected. Requested in #57.
+
+### Fixed
+- The Wicker Basket could be eaten at full hunger, letting players max out saturation. It now follows the same rule as normal food: it can only be used when the player can eat, unless the food it would pick is always-edible (e.g. golden apple). Reported in #58.
+- On Fabric dedicated servers, server config values were never sent to clients, so tooltips, AppleSkin values, Wicker Basket food selection and basket slot validation on the client were all computed with default values. This made it look like config changes had no effect on servers. The server config is now synced to each player on login (a new `SyncConfigPacket`, sent on every platform).
+- The Fabric config loader no longer keeps the previous world's `basketBlacklist`/new-key values in memory when a world's config file does not contain the key.
+
+---
+
+## [2.16+1.21.1] - 2026-11-03 (日本語)
+
+### 追加
+- 設定 `preventEatingFullyDecayedFood`（デフォルト: `true`）を追加。減衰で満腹度回復量が0になった食べ物は食べられなくなり、金リンゴ等を効果目当てで食べ続けることができなくなった。右クリック時に両サイドで判定し、アクションバーにメッセージを表示する。ブラックリスト食品・クリエイティブ・元々満腹度を回復しない食べ物・`guaranteeMinimumNutrition = true` の場合は対象外。要望: #57。
+
+### 修正
+- Wicker Basket が満腹でも食べられ、隠し満腹度を最大まで溜められた問題を修正。通常の食べ物と同様に、食べられる状態のときだけ使えるようにした（自動選択される食べ物が金リンゴ等の常時食べられる食べ物なら満腹でも可）。報告: #58。
+- Fabric の専用サーバーでサーバー設定がクライアントに送られておらず、ツールチップ・AppleSkin の表示・Wicker Basket の自動選択・バスケットのスロット判定がクライアント側ではデフォルト値で計算されていた問題を修正。サーバーで設定を変えても反映されていないように見える原因だった。ログイン時にサーバー設定をクライアントへ同期するようにした（新規 `SyncConfigPacket`、全プラットフォームで送信）。
+- ワールドの設定ファイルにキーが無い場合、Fabric の設定ローダーが前のワールドの値をメモリに残したままにしないようにした。
+
+---
+
 ## [2.15+1.21.1] - 2026-09-08
 
 ### Added

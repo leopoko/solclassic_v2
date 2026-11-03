@@ -23,6 +23,7 @@ public class SolClassicConfigInitNeoForge {
         SolclassicConfigData.basketBlacklist = new ArrayList<>(SolClassicConfigNeoForge.CONFIG.basketBlacklist.get());
         SolclassicConfigData.enableWickerBasket = SolClassicConfigNeoForge.CONFIG.enableWickerBasket.get();
         SolclassicConfigData.guaranteeMinimumNutrition = SolClassicConfigNeoForge.CONFIG.guaranteeMinimumNutrition.get();
+        SolclassicConfigData.preventEatingFullyDecayedFood = SolClassicConfigNeoForge.CONFIG.preventEatingFullyDecayedFood.get();
         SolclassicConfigData.enableTooltip = SolClassicConfigNeoForge.CONFIG.enableTooltip.get();
         SolclassicConfigData.enableItemDescription = SolClassicConfigNeoForge.CONFIG.enableItemDescription.get();
     }

@@ -155,9 +155,20 @@ public class WickerBasketItem extends Item {
             if (listTag.isEmpty() || !SolclassicConfigData.enableWickerBasket) {
                 return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
             }
-            else {
-                player.startUsingItem(hand);
+
+            // 通常の食べ物と同様、満腹時は食べられないようにする (#58)。
+            // 以前はこの判定が無く、満腹でも食べ続けて隠し満腹度を最大まで溜められた。
+            // 実際に食べる食べ物が canAlwaysEat（金リンゴ等）なら満腹でも許可する。
+            ItemStack food = getMostNutritiousFood(stack, player);
+            if (food.isEmpty()) {
+                return InteractionResultHolder.fail(stack);
             }
+            FoodProperties foodProperties = food.get(DataComponents.FOOD);
+            boolean canAlwaysEat = foodProperties != null && foodProperties.canAlwaysEat();
+            if (!player.canEat(canAlwaysEat)) {
+                return InteractionResultHolder.fail(stack);
+            }
+            player.startUsingItem(hand);
         }
 
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());

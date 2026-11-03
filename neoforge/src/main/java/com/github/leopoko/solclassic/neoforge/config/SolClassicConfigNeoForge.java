@@ -27,6 +27,7 @@ public class SolClassicConfigNeoForge {
         public final ModConfigSpec.ConfigValue<List<? extends String>> basketBlacklist;
         public final ModConfigSpec.BooleanValue enableWickerBasket;
         public final ModConfigSpec.BooleanValue guaranteeMinimumNutrition;
+        public final ModConfigSpec.BooleanValue preventEatingFullyDecayedFood;
         public final ModConfigSpec.BooleanValue enableTooltip;
         public final ModConfigSpec.BooleanValue enableItemDescription;
 
@@ -81,6 +82,10 @@ public class SolClassicConfigNeoForge {
             guaranteeMinimumNutrition = builder
                     .comment("Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.")
                     .define("guaranteeMinimumNutrition", false);
+
+            preventEatingFullyDecayedFood = builder
+                    .comment("Prevent eating food whose hunger recovery has decayed to 0 (e.g. golden apples eaten only for their effects)")
+                    .define("preventEatingFullyDecayedFood", true);
 
             enableTooltip = builder
                     .comment("Enable food decay tooltip on food items")

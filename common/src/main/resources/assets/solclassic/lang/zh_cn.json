@@ -14,5 +14,6 @@
   "gui.food_history_book.title": "食物记录",
   "gui.food_history_book.summary": "已食用 %s 种独特食物",
   "gui.food_history_book.empty": "暂无食物历史记录",
-  "gui.food_history_book.page": "第 %s 页 / 共 %s 页"
+  "gui.food_history_book.page": "第 %s 页 / 共 %s 页",
+  "message.solclassic.food_fully_decayed": "你已经吃腻了这种食物，再吃也填不饱肚子了。"
 }
