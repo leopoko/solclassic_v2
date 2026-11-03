@@ -102,6 +102,7 @@ public final class SolclassicForge {
             SolClassicConfigForge.CONFIG.basketBlacklist.set(new ArrayList<>(defaults.basketBlacklist));
             SolClassicConfigForge.CONFIG.enableWickerBasket.set(defaults.enableWickerBasket);
             SolClassicConfigForge.CONFIG.guaranteeMinimumNutrition.set(defaults.guaranteeMinimumNutrition);
+            SolClassicConfigForge.CONFIG.preventEatingFullyDecayedFood.set(defaults.preventEatingFullyDecayedFood);
             SolClassicConfigForge.CONFIG.enableTooltip.set(defaults.enableTooltip);
             SolClassicConfigForge.CONFIG.enableItemDescription.set(defaults.enableItemDescription);
             LOGGER.info("SolClassic: グローバルデフォルト設定を新規ワールドに適用しました");

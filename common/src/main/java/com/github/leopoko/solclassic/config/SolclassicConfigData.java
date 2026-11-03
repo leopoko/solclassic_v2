@@ -17,6 +17,8 @@ public class SolclassicConfigData {
     public static boolean enableWickerBasket = true;
     // 満腹度回復率が0%の食べ物に最低限1の回復を保証するかどうか
     public static boolean guaranteeMinimumNutrition = false;
+    // 減衰で満腹度回復量が0になった食べ物を食べられないようにするかどうか（効果だけ得る抜け道の防止）
+    public static boolean preventEatingFullyDecayedFood = true;
     // 食べ物のツールチップに減衰率を表示するかどうか
     public static boolean enableTooltip = true;
     // MODアイテム（WickerBasket等）の説明文ツールチップを表示するかどうか

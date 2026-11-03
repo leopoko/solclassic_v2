@@ -23,6 +23,7 @@ public class SolClassicConfigInitForge {
         SolclassicConfigData.basketBlacklist = new ArrayList<>(SolClassicConfigForge.CONFIG.basketBlacklist.get());
         SolclassicConfigData.enableWickerBasket = SolClassicConfigForge.CONFIG.enableWickerBasket.get();
         SolclassicConfigData.guaranteeMinimumNutrition = SolClassicConfigForge.CONFIG.guaranteeMinimumNutrition.get();
+        SolclassicConfigData.preventEatingFullyDecayedFood = SolClassicConfigForge.CONFIG.preventEatingFullyDecayedFood.get();
         SolclassicConfigData.enableTooltip = SolClassicConfigForge.CONFIG.enableTooltip.get();
         SolclassicConfigData.enableItemDescription = SolClassicConfigForge.CONFIG.enableItemDescription.get();
     }

@@ -14,5 +14,6 @@
   "gui.food_history_book.title": "食事記録",
   "gui.food_history_book.summary": "%s種類の食べ物を食べました",
   "gui.food_history_book.empty": "まだ食事記録がありません",
-  "gui.food_history_book.page": "%s / %s ページ"
+  "gui.food_history_book.page": "%s / %s ページ",
+  "message.solclassic.food_fully_decayed": "この食べ物にはもう飽きてしまった。食べてもお腹が満たされない。"
 }

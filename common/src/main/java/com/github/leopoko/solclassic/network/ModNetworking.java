@@ -14,6 +14,15 @@ public class ModNetworking {
                 SyncFoodHistoryPacket::encode,
                 SyncFoodHistoryPacket::new,
                 SyncFoodHistoryPacket::apply);
+        CHANNEL.register(SyncConfigPacket.class,
+                SyncConfigPacket::encode,
+                SyncConfigPacket::new,
+                SyncConfigPacket::apply);
+    }
+
+    // サーバー設定をクライアントへ同期する（ログイン時）
+    public static void sendConfigToPlayer(ServerPlayer player) {
+        CHANNEL.sendToPlayer(player, new SyncConfigPacket());
     }
 
     // サーバー -> クライアント送信用（プレイヤーに対して送信）

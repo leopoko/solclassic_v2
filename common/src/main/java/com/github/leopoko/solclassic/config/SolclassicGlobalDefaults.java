@@ -30,6 +30,7 @@ public class SolclassicGlobalDefaults {
     public List<String> basketBlacklist = Collections.emptyList();
     public boolean enableWickerBasket = true;
     public boolean guaranteeMinimumNutrition = false;
+    public boolean preventEatingFullyDecayedFood = true;
     public boolean enableTooltip = true;
     public boolean enableItemDescription = true;
 
@@ -102,6 +103,9 @@ public class SolclassicGlobalDefaults {
                         break;
                     case "guaranteeMinimumNutrition":
                         this.guaranteeMinimumNutrition = Boolean.parseBoolean(value);
+                        break;
+                    case "preventEatingFullyDecayedFood":
+                        this.preventEatingFullyDecayedFood = Boolean.parseBoolean(value);
                         break;
                     case "enableTooltip":
                         this.enableTooltip = Boolean.parseBoolean(value);
@@ -186,6 +190,8 @@ public class SolclassicGlobalDefaults {
         sb.append("enableWickerBasket = ").append(defaults.enableWickerBasket).append("\n");
         sb.append("#Guarantee minimum 1 nutrition even when decay reduces it to 0. When false, fully decayed food gives no nutrition.\n");
         sb.append("guaranteeMinimumNutrition = ").append(defaults.guaranteeMinimumNutrition).append("\n");
+        sb.append("#Prevent eating food whose hunger recovery has decayed to 0 (e.g. golden apples eaten only for their effects)\n");
+        sb.append("preventEatingFullyDecayedFood = ").append(defaults.preventEatingFullyDecayedFood).append("\n");
         sb.append("#Enable food decay tooltip on food items\n");
         sb.append("enableTooltip = ").append(defaults.enableTooltip).append("\n");
         sb.append("#Enable item description tooltip on mod items (Wicker Basket, Food History Book, etc.)\n");
@@ -212,6 +218,7 @@ public class SolclassicGlobalDefaults {
         defaults.basketBlacklist = new ArrayList<>(SolclassicConfigData.basketBlacklist);
         defaults.enableWickerBasket = SolclassicConfigData.enableWickerBasket;
         defaults.guaranteeMinimumNutrition = SolclassicConfigData.guaranteeMinimumNutrition;
+        defaults.preventEatingFullyDecayedFood = SolclassicConfigData.preventEatingFullyDecayedFood;
         defaults.enableTooltip = SolclassicConfigData.enableTooltip;
         defaults.enableItemDescription = SolclassicConfigData.enableItemDescription;
 

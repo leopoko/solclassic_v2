@@ -14,5 +14,6 @@
   "gui.food_history_book.title": "Food History",
   "gui.food_history_book.summary": "Eaten %s unique foods",
   "gui.food_history_book.empty": "No food history yet",
-  "gui.food_history_book.page": "Page %s / %s"
+  "gui.food_history_book.page": "Page %s / %s",
+  "message.solclassic.food_fully_decayed": "You're sick of this food. It won't fill you up anymore."
 }

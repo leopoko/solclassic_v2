@@ -112,6 +112,10 @@ public class SolClassicConfigLoaderFabric {
             SolclassicConfigData.guaranteeMinimumNutrition = guaranteeMinimumNutrition;
             SolclassicConfigData.enableTooltip = enableTooltip;
             SolclassicConfigData.enableItemDescription = enableItemDescription;
+            // preventEatingFullyDecayedFood は後から追加されたキー。既存の設定ファイルに無くても
+            // 再生成はせず、デフォルト値を使う（前のワールドの値が残らないよう明示的に代入する）
+            Object preventEating = settings.get("preventEatingFullyDecayedFood");
+            SolclassicConfigData.preventEatingFullyDecayedFood = preventEating instanceof Boolean b ? b : true;
 
         } catch (IOException e) {
             e.printStackTrace();

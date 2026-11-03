@@ -7,9 +7,12 @@ import com.github.leopoko.solclassic.container.FoodContainer;
 import com.github.leopoko.solclassic.item.BasketItem;
 import com.github.leopoko.solclassic.item.FoodHistoryBookItem;
 import com.github.leopoko.solclassic.item.WickerBasketItem;
+import com.github.leopoko.solclassic.network.ModNetworking;
 import com.github.leopoko.solclassic.utils.ClientTooltipHandler;
+import com.github.leopoko.solclassic.utils.DecayedFoodGuard;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -74,6 +77,13 @@ public final class Solclassic {
             ResetFoodHistoryCommand.register(dispatcher);
             GenerateDefaultsCommand.register(dispatcher);
         });
+
+        // 減衰で回復量0になった食べ物を食べられないようにする (#57)
+        DecayedFoodGuard.register();
+
+        // サーバー設定をクライアントへ同期する。Fabric では同期しないと専用サーバーで
+        // ツールチップ等がクライアントのデフォルト値で計算されてしまう
+        PlayerEvent.PLAYER_JOIN.register(ModNetworking::sendConfigToPlayer);
 
         if (Platform.getEnvironment() == Env.CLIENT) {
             ClientTooltipHandler.init();
